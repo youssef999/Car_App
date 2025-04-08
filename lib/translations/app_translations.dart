@@ -5,6 +5,7 @@ class AppTranslations extends Translations {
   Map<String, Map<String, String>> get keys => {
         'en': {
 
+"Negotiated":"Negotiated",
 "New Price (SAR)":"New Price (SAR)",
 
             
@@ -107,9 +108,13 @@ class AppTranslations extends Translations {
               'Waiting for provider confirmation...',
           'Send Request': 'Send Request',
           'No notifications found': 'No notifications found',
-          'Notifications': 'Notifications'
+          'Notifications': 'Notifications',
+          "price":"Price"
         },
         'ar': {
+          "price":"السعر",
+
+          "Negotiated":"تم التوافض",
 
           "New Price (SAR)":"السعر الجديد (SAR)",
          

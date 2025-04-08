@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -73,10 +75,10 @@ class ClientController extends GetxController {
   // Negotiate price using Offer object
   Future<void> negotiateOfferPrice(
       ProviderOfferModel offer, String newPrice) async {
-    String? token = await FirebaseMessaging.instance.getToken();
+    //String? token = await FirebaseMessaging.instance.getToken();
     try {
       await _firestore.collection('offers').doc(offer.id).update({
-        'price': int.parse(newPrice),
+        'servicePricing': (newPrice),
         'status': 'Negotiated',
       });
       Get.snackbar('Success'.tr, "${'Price updated to'.tr}$newPrice" );

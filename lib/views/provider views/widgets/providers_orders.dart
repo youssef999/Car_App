@@ -90,6 +90,12 @@ class ProviderOrders extends StatelessWidget {
                     value: 'Pending',
                     controller: _controller,
                   ),
+                   _buildRadioOption(
+                    label: 'Negotiated'.tr,
+                    value: 'Negotiated',
+                    controller: _controller,
+                  ),
+                  //Negotiated
                   _buildRadioOption(
                     label: 'rejected'.tr,
                     value: 'Rejected',
@@ -272,7 +278,20 @@ class OrderCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8), // Spacing
+                const SizedBox(height: 8),
+                
+                  (order.status=='Negotiated')?
+                 Text(
+                      '${'New Price (SAR)'.tr}: ${order.price}',
+                      style: const TextStyle(fontSize: 14),
+                    ):const SizedBox(),
+                    //pacing
+
+                     (order.status!='Negotiated')?
+                 Text(
+                      '${'price'.tr}: ${order.price}',
+                      style: const TextStyle(fontSize: 14),
+                    ):const SizedBox(),
 
                 // Status
                 Row(
@@ -297,6 +316,13 @@ class OrderCard extends StatelessWidget {
                     Text('accepted'.tr,
                         style:const TextStyle(color:Colors.green,fontSize: 16)
                     ):const SizedBox(),
+
+
+                  (order.status=='Negotiated')?
+                    Text('Negotiated'.tr,
+                        style:const TextStyle(color:Colors.amber,fontSize: 16)
+                    ):const SizedBox(),
+
 
                     (order.status=='Rejected')?
                     Text('rejected'.tr,
