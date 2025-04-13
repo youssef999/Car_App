@@ -6,14 +6,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:first_project/helper/send_notification.dart';
 import 'package:first_project/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:first_project/models/provider_offer_model.dart';
 import 'package:get/get.dart';
 
 class ClientController extends GetxController {
+
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String userId = 'user123'; // Replace with the actual user ID
+  final String userId = '1'; // Replace with the actual user ID
 
   // Observable variable to track the current index of the bottom navigation bar
   var currentIndex = 0.obs;
@@ -31,6 +34,174 @@ class ClientController extends GetxController {
 
   var offers = <ProviderOfferModel>[].obs;
 
+
+
+ Future<void> rateProvider(String providerId,String requestId,String offerId) async {
+  
+  final firestore = FirebaseFirestore.instance;
+  TextEditingController commentController = TextEditingController();
+  
+
+  double widgetRate=1.0;
+  // 1. Show rating dialog
+  final result = await Get.dialog(
+    AlertDialog(
+      title:  Text('Rate Provider'.tr),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('How would you rate this provider?'.tr),
+          const SizedBox(height: 16),
+          RatingBar.builder(
+            initialRating: 3,
+            minRating: 1,
+            direction: Axis.horizontal,
+            allowHalfRating: false,
+            itemCount: 5,
+            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+            itemBuilder: (context, _) => const Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
+            onRatingUpdate: (rating) {
+              widgetRate=rating;
+            },
+          ),
+          const SizedBox(height: 16),
+           TextField(
+            controller: commentController,
+            decoration: InputDecoration(
+              labelText: 'Comment (optional)'.tr,
+              border: const OutlineInputBorder(),
+            ),
+            maxLines: 3,
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: (){
+Get.back();
+          } ,
+          child:  Text('Cancel'.tr),
+        ),
+        TextButton(
+          onPressed: () => 
+          Get.back(
+            result: {
+            'rating': widgetRate, // This should come from the rating bar
+            'comment': commentController.text, // This should come from the text field
+          }),
+          child: Text('Submit'.tr),
+        ),
+      ],
+    ),
+  );
+
+  if (result == null) return; // User cancelled
+
+  // final rating = result['rate'] as double;
+  // final comment = result['comment'] as String;
+
+  // 2. Update provider's average rating
+  final providerRef = firestore.collection('providers').doc(providerId);
+  await firestore.runTransaction((transaction) async {
+    final snapshot = await transaction.get(providerRef);
+    final currentData = snapshot.data() as Map<String, dynamic>;
+    final currentRating = currentData['rate'] ?? 0.0;
+    //final currentRatingsCount = currentData['ratingsCount'] ?? 0;
+ print("CURRENT RATE==$currentRating");
+  final newRating =( currentRating+widgetRate)/2;
+  
+  //  ((currentRating * currentRatingsCount) + rating) / 
+  //       (currentRatingsCount + 1);
+
+    // final newRating = ((currentRating * currentRatingsCount) + rating) / 
+    //     (currentRatingsCount + 1);
+
+    transaction.update(providerRef, {
+      'rate': newRating,
+     // 'ratingsCount': currentRatingsCount + 1,
+    });
+  });
+  markOfferAsDone(offerId);
+  // 3. Add comment to comments collection
+  await firestore.collection('comments').add({
+    'userId': userId,
+    'providerId': providerId,
+    'rate': widgetRate,
+    //rating,
+    'comment': commentController.text,
+    'timestamp': FieldValue.serverTimestamp(),
+  });
+  // updateOffersByRequestId(offerId: offerId
+  // , requestId: requestId, updateData: {
+  //   'status': 'Rejected'
+  // });
+
+  Get.snackbar('Success', 'Thank you for your feedback!');
+}
+
+
+Future<void> updateOffersByRequestId({
+  required String offerId,
+  required String requestId,
+  required Map<String, dynamic> updateData,
+}) async {
+
+  print("UPDATE OFFERS TO REJETCEDDDDD....");
+  try {
+    final firestore = FirebaseFirestore.instance;
+    
+    // First update the specific offer by ID
+    await firestore.collection('offers').doc(offerId).update(updateData);
+    
+    // Then update all other offers with matching requestId
+    // that are neither 'Done' nor 'Started'
+    final querySnapshot = await firestore.collection('offers')
+        .where('requestId', isEqualTo: requestId)
+        .where('status', whereNotIn: ['Done', 'Started']) // Correct way to exclude multiple statuses
+        .where(FieldPath.documentId, isNotEqualTo: offerId)
+        .get();
+
+    // Batch update all matching offers
+    final batch = firestore.batch();
+    for (final doc in querySnapshot.docs) {
+      batch.update(doc.reference, updateData);
+    }
+    
+    await batch.commit();
+    
+    print('Successfully updated ${querySnapshot.size + 1} offers');
+    Get.snackbar('Success', 'Offers updated successfully'); // Show success message
+  } catch (e) {
+    print('Error updating offers: $e');
+    Get.snackbar('Error', 'Failed to update offers: ${e.toString()}'); // Show error message
+    rethrow;
+  }
+}
+  
+  Future<void> markOfferAsDone(String offerId) async {
+
+    print("OFFER ID===$offerId");
+  try {
+    await FirebaseFirestore.instance
+        .collection('offers')
+        .doc(offerId)
+        .update({
+          'status': 'Done',
+         // '//completedAt': FieldValue.serverTimestamp(),
+        });
+    print('Offer $offerId marked as Done');
+    // Optional: Show success message
+    // Get.snackbar('Success', 'Offer completed successfully');
+  } catch (e) {
+    print('Error marking offer as Done: $e');
+    // Optional: Show error message
+    // Get.snackbar('Error', 'Failed to update offer status');
+    rethrow; // Re-throw if you want to handle the error upstream
+  }
+}
 // Fetch offers as objects
   Future<void> fetchOffers() async {
 
@@ -41,21 +212,43 @@ class ClientController extends GetxController {
           .collection('offers')
           .where('userId', isEqualTo: '1')
           .where('status', isNotEqualTo: 'Rejected')
+         // .where('show', isNotEqualTo: false)
           // .orderBy('timeOfOffer', descending: true)
           // مش عايز يتعمل الترتيب بالوقت للاسف
           .get();
-
       offers.value = querySnapshot.docs
           .map((doc) => ProviderOfferModel.fromSnapshot(doc))
           .toList();
-
-
-
     } catch (e) {
       Get.snackbar('Error', 'Failed to fetch offers: $e');
       print("EEEE===$e");
     }
   }
+
+Future<void> fetchDoneOffers() async {
+
+    print("FETCH OFFFERRRSSS");
+
+    try {
+      final querySnapshot = await _firestore
+          .collection('offers')
+          .where('userId', isEqualTo: '1')
+          .where('status', isNotEqualTo: 'Done')
+          
+          // .orderBy('timeOfOffer', descending: true)
+          // مش عايز يتعمل الترتيب بالوقت للاسف
+          .get();
+      offers.value = querySnapshot.docs
+          .map((doc) => ProviderOfferModel.fromSnapshot(doc))
+          .toList();
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to fetch offers: $e');
+      print("EEEE===$e");
+    }
+  }
+
+  
+  
 
   // Update status using Offer object
   Future<void> rejectOffer(ProviderOfferModel offer, String status) async {
@@ -75,17 +268,19 @@ class ClientController extends GetxController {
   // Negotiate price using Offer object
   Future<void> negotiateOfferPrice(
       ProviderOfferModel offer, String newPrice) async {
+        print("=====OFFER===${offer.id}");
+        print("=====PRICE===$newPrice");
     //String? token = await FirebaseMessaging.instance.getToken();
     try {
       await _firestore.collection('offers').doc(offer.id).update({
         'servicePricing': (newPrice),
+        "price": (newPrice),
         'status': 'Negotiated',
       });
       Get.snackbar('Success'.tr, "${'Price updated to'.tr}$newPrice" );
       // NotificationService.sendNotification
       //   (token!, 'تفاوض','تم ارسال طلب تفاوض ');
       triggerNotification('تم ارسال طلب تفاوض');
-
       fetchOffers();
     } catch (e) {
       Get.snackbar('Error', 'Failed to negotiate: $e');
@@ -164,7 +359,20 @@ class ClientController extends GetxController {
         //
         // NotificationService.sendNotification(token.toString()
         //     , 'موافقة علي طلبك ', 'تمت الموافقة ');
-      } else {
+      } 
+      //Started
+        if (status == 'Started') {
+        Get.snackbar('Success'.tr, 'Offer accepted and provider notified'.tr,
+        colorText:Colors.white,
+        backgroundColor:Colors.green,
+        );
+        triggerNotification('تمت الموافقة علي عرضك من قبل العميل ');
+        //
+        // NotificationService.sendNotification(token.toString()
+        //     , 'موافقة علي طلبك ', 'تمت الموافقة ');
+      } 
+      
+      else {
         Get.snackbar('Success'.tr, 'Offer rejected and provider notified'.tr);
       }
     } catch (e) {

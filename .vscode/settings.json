@@ -1,6 +1,11 @@
 {
     "cSpell.words": [
+        "NOTIF",
         "provid",
         "toogle"
-    ]
+    ],
+    "flutterTools.displayGetxContextMenu": true,
+    "flutterTools.displayMobxContextMenu": false,
+    "flutterTools.displayRiverpodContextMenu": false,
+    "flutterTools.displayModularContextMenu": false
 }

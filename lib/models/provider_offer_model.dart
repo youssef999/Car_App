@@ -5,6 +5,8 @@ class ProviderOfferModel {
   final String providerId;
   final String userId;
   final String providerName;
+  final String requestId;
+  
   final double distance;
   final String price;
   final Timestamp timeOfOffer;
@@ -17,6 +19,7 @@ class ProviderOfferModel {
     required this.id,
     required this.providerId,
     required this.userId,
+    required this.requestId,
     required this.providerName,
     required this.distance,
     required this.price,
@@ -33,6 +36,7 @@ class ProviderOfferModel {
     return ProviderOfferModel(
       id: data['offerId'],
       providerId: data['providerId'] ?? '1',
+      requestId: data['requestId'] ?? '1',
       userId: data['userId']??"1",
       providerName: data['providerName']??"",
       distance: data['distance'].toDouble()??90,
@@ -51,6 +55,7 @@ class ProviderOfferModel {
       id: json['offerId'] ?? '', // Provide a default value if 'id' is not present
       providerId: json['providerId'] ?? '1',
       userId: json['userId']??"",
+      requestId: json['requestId']??"",
       providerName: json['providerName']??"",
       distance: json['distance'].toDouble()??90,
       price: json['price']??"",

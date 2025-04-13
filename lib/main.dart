@@ -13,9 +13,7 @@ import 'package:first_project/views/provider%20views/provider_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await Firebase.initializeApp(); // Initialize Firebase Messaging
@@ -31,6 +29,7 @@ void main() async {
   );
   // Get the FCM token
   String? token = await messaging.getToken();
+  // ignore: duplicate_ignore
   // ignore: avoid_print
   print('FCM Token: $token');
 

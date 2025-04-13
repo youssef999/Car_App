@@ -109,9 +109,81 @@ class AppTranslations extends Translations {
           'Send Request': 'Send Request',
           'No notifications found': 'No notifications found',
           'Notifications': 'Notifications',
-          "price":"Price"
+          "price":"Price",
+          "call_now":"Call Now",
+          "call_me":"call_me",
+          "confirm_offer":"Confirm Offer",
+          "reject_offer":"Reject Offer",
+          "New Price":"New Price (SAR)",
+          "Provider accepted your offer":"Provider accepted your offer",
+          "Provider In The Way":"Provider In The Way",
+          "accept_offer_start_task":"Accept Offer and Start Task",
+          "negotied offer has been refused":"negotied offer has been refused",
+          "negotied offer has been accepted":"negotied offer has been accepted",
+          "Start Task":"Offer Accepted and Start Task",
+          "Estimated Time":"Estimated Time",
+          "Mins":"Minutes",
+          "distance":"Distance",
+          "How would you rate this provider?":"How would you rate this provider?",
+          "DoneTask":"DoneTask",
+          "Rate Provider":"Rate Provider",
+          "Comment (optional)":"Comment (optional)",
+          "Submit":"Submit",
+          "Service":"Service",
+          "Task Completed":"Task Completed",
+          "Negotiated Sent":"Negotiated Sent",
+
+           "Active Tasks":"Active Tasks",
+          "Completed Tasks":"Completed Tasks",
+
+          "No active tasks":"No active tasks",
+          
+          "No completed tasks yet":"No completed tasks yet",
+
+          "My Tasks":"My Tasks",
+          "New":"New",
+
         },
         'ar': {
+
+          "New":"جديد",
+
+         // "Offer Accepted":"بانتظار موافقة مقدم الخدمة علي التفاوض",
+
+          "My Tasks":"المهام",
+
+          "No active tasks":"لا يوجد مهام نشطة",
+          "No completed tasks yet":"لا يوجد مهام مكتملة بعد",
+
+          "Active Tasks":"المهام النشطة",
+          "Completed Tasks":"المهام المكتملة",
+          
+          "Task Completed":"المهمة مكتملة",
+          "Negotiated Sent":"بانتظار موافقة مقدم الخدمة علي التفاوض",
+          "Service":"خدمة",
+          "Submit":"تاكيد",
+          "Comment (optional)":"تعليق (اختياري)",
+          "Rate Provider":"قيم المقدم",
+          "How would you rate this provider?":"كيف تقيم هذا المقدم؟",
+          "DoneTask":"هل تم الانتهاء من المهمة",
+          "km away": "كيلومترات",
+          "distance":"المسافة",
+          "Mins": "دقائق",
+          "Estimated Time":"وقت الوصول المتوقع",
+          "Start Task": "بدء المهمة",
+         
+          "negotied offer has been refused":"تم رفض التفاوض",
+          "negotied offer has been accepted":"تم قبول التفاوض",
+
+
+
+          "accept_offer_start_task":"موافقةوبدء العملية",
+          "Provider In The Way":" مقدم الخدمة في الطريق اليك ",
+          "Provider accepted your offer":"قام المقدم بالموافقة على عرضك",
+          "New Price":"السعر الجديد",
+          "reject_offer":"رفض العرض",
+          "confirm_offer":"تاكيد العرض",
+          "call_me":"اتصل بي",      
           "price":"السعر",
 
           "Negotiated":"تم التوافض",
@@ -136,6 +208,7 @@ class AppTranslations extends Translations {
           "View Details": "عرض التفاصيل",
           "Accept Request": "قبول الطلب",
           "Traffic Accident": "حادثة سيارة",
+          "call_now": "اتصل الان",
           "Technical Malfunction": "حادثة فنية",
           "Request submitted successfully": "تم ارسال الطلب بنجاح",
           "Success": " نجاح العملية",

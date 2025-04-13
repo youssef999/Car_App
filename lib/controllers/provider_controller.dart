@@ -51,6 +51,101 @@ class ProviderController extends GetxController {
 
 
 
+
+Future<void> updateOffersByRequestId({
+  required String offerId,
+  required String requestId,
+  required Map<String, dynamic> updateData,
+}) async {
+
+  print("UPDATE OFFERS TO REJETCEDDDDD....");
+  try {
+    final firestore = FirebaseFirestore.instance;
+    
+    // First update the specific offer by ID
+    await firestore.collection('offers').doc(offerId).update(updateData);
+    
+    // Then update all other offers with matching requestId
+    // that are neither 'Done' nor 'Started'
+    final querySnapshot = await firestore.collection('offers')
+        .where('requestId', isEqualTo: requestId)
+        .where('status', whereNotIn: ['Done', 'Started']) // Correct way to exclude multiple statuses
+        .where(FieldPath.documentId, isNotEqualTo: offerId)
+        .get();
+
+    // Batch update all matching offers
+    final batch = firestore.batch();
+    for (final doc in querySnapshot.docs) {
+      batch.update(doc.reference, updateData);
+    }
+    
+    await batch.commit();
+    
+    print('Successfully updated ${querySnapshot.size + 1} offers');
+    Get.snackbar('Success', 'Offers updated successfully'); // Show success message
+  } catch (e) {
+    print('Error updating offers: $e');
+    Get.snackbar('Error', 'Failed to update offers: ${e.toString()}'); // Show error message
+    rethrow;
+  }
+}
+
+
+
+Future<void> updateOfferStatus(String status, String id,String requestId) async {
+  try {
+    // Get reference to the Firestore collection
+    final CollectionReference offersCollection = 
+        FirebaseFirestore.instance.collection('offers');
+    
+    // Update the document with the matching ID
+    await offersCollection.doc(id).update({
+      'status': status,
+     // 'updatedAt': FieldValue.serverTimestamp(), // Optional: add timestamp
+    });
+    
+    print('Offer $id updated successfully with status: $status');
+    
+
+    if(status == 'Started'){
+Get.snackbar(
+  'Start Task'.tr, '',
+  //'تم الموافقة ويتم بدء المهمة', '',
+    backgroundColor:Colors.green,
+    colorText:Colors.white,
+    icon:const Icon(Icons.done,color:Colors.white,),
+    );
+    }
+    else if(status == 'Accepted'){
+Get.snackbar('negotied offer has been accepted'.tr, '',
+    backgroundColor:Colors.green,
+    colorText:Colors.white,
+    icon:const Icon(Icons.done,color:Colors.white,),
+    );
+    }else{
+      Get.snackbar('negotied offer has been refused'.tr, '',
+    backgroundColor:Colors.green,
+    colorText:Colors.white,
+    icon:const Icon(Icons.done,color:Colors.white,),
+    );
+    }
+    fetchOrders();
+
+    updateOffersByRequestId(offerId: id, requestId: requestId, 
+    updateData: {
+      'status': 'Rejected'
+    }
+    
+    );
+
+
+  } catch (e) {
+    print('Error updating offer status: $e');
+    rethrow; // Re-throw the error if you want calling code to handle it
+  }
+}
+
+
   final RxList<RequestModel> servicePendingRequests 
   = <RequestModel>[].obs;
 
