@@ -1,5 +1,7 @@
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class RequestModel {
   final String id;
   final DateTime time;
@@ -44,6 +46,27 @@ class RequestModel {
       'status': status, // Add this field
       'hiddenByProvider': hiddenByProvider, // Add this field
     };
+  }
+
+  factory RequestModel.fromFirestore(DocumentSnapshot data) {
+    return RequestModel(
+      id: data['id']??"",
+      time: data['timestamp'].toDate()??DateTime.now(),
+      destination: data['placeToGo1']??'4',
+      destination2: data['placeToGo2']??"4",
+      destination3: data['placeToGo3']??'x',
+      carSize: data['carSize']??'dd',
+      carStatus: data['carProblem']??"pp",
+       servicePricing: '',
+       //data['servicePricing1']??"ddc",
+      placeOfLoading: data['placeOfLoading1']??"s",
+      placeOfLoading2: data['placeOfLoading2']??"pppp",
+      placeOfLoading3: data['placeOfLoading3']??"eerr",
+      providerId: data['providerId']??"eerr",
+      status: data['status']??'pending', // Add this field
+      hiddenByProvider:
+      data['hiddenByProvider'] ?? false, // Default to false if null
+    );
   }
 
   factory RequestModel.fromMap(Map<String, dynamic> data) {

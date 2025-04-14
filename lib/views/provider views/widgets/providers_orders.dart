@@ -111,11 +111,11 @@ class ProviderOrders extends StatelessWidget {
                           value: 'Rejected',
                           controller: _controller,
                         ),
-                        _buildRadioOption(
-                          label: 'accepted'.tr,
-                          value: 'Started',
-                          controller: _controller,
-                        ),
+                        // _buildRadioOption(
+                        //   label: 'accepted'.tr,
+                        //   value: 'Started',
+                        //   controller: _controller,
+                        // ),
                          _buildRadioOption(
                           label: 'startOrder'.tr,
                           value: 'Started',

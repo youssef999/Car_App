@@ -30,7 +30,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
             ),
           );
         }
-
         return RefreshIndicator(
           onRefresh: () async {
             await _controller.fetchNotifications(); // Refresh notifications

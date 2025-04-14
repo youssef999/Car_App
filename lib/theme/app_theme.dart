@@ -13,17 +13,18 @@ final ThemeData redTheme = ThemeData(
     secondary: Colors.redAccent, // Accent color
   ),
   scaffoldBackgroundColor: Colors.white, // Background color
-  appBarTheme: AppBarTheme(
-    color: appBarColor,
+  appBarTheme: const AppBarTheme(
+    color: Colors.amber,
     //Color.fromARGB(255, 172, 62, 54), // AppBar color
-    titleTextStyle: const TextStyle(
-      color: Colors.white, // AppBar text color
+    titleTextStyle: TextStyle(
+      color: Colors.black, // AppBar text color
       fontSize: 20,
       fontWeight: FontWeight.bold,
     ),
   ),
   buttonTheme:  ButtonThemeData(
     buttonColor: buttonColor,
+
     //Color.fromARGB(255, 172, 62, 54), // Button color
     textTheme:ButtonTextTheme.normal,
   ),

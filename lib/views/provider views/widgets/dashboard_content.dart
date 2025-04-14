@@ -3,10 +3,20 @@ import 'package:first_project/values/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class DashboardContent extends StatelessWidget {
+class DashboardContent extends StatefulWidget {
 
+  @override
+  State<DashboardContent> createState() => _DashboardContentState();
+}
+
+class _DashboardContentState extends State<DashboardContent> {
   final ProviderController _controller = Get.find();
 
+  @override
+  void initState() {
+    _controller.loadRequests();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -98,13 +108,13 @@ class DashboardContent extends StatelessWidget {
                             Text(
                               'request_id'.tr,
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 15,
                                 fontWeight: FontWeight.bold,
                               ),
                             ), Text(
                         request.id,
                               style: const TextStyle(
-                                fontSize: 13,
+                                fontSize: 10,
                                 color:Colors.grey,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -157,7 +167,6 @@ class DashboardContent extends StatelessWidget {
                                   // ignore: avoid_print
                                   print("req==${request.id}");
                                 _controller.sendOffer(request.id, request.servicePricing);
-      
                           _controller.sendOfferToClient(request.id,request.servicePricing,request);
                               }
                             ),

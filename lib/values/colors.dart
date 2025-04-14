@@ -3,7 +3,8 @@
 
 import 'package:flutter/material.dart';
 
-Color primary=Colors.orangeAccent;
-Color appBarColor=Colors.orangeAccent;
+Color primary=Colors.amber;
+Color appBarColor=Colors.orange;
 Color buttonColor=Colors.orange;
-Color textColor=Colors.white;
+Color textColorLight=Colors.white;
+Color textColorDark=Colors.black;

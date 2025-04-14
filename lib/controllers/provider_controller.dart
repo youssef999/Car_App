@@ -291,11 +291,19 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
       // مسحنا من الفايربيز
       // _serviceRequests.removeWhere((request) => request.id == requestId);
       // كده اتاكدت اني مسحت برضو من الليست هنا
-      await loadRequests(); // Refresh the list
+      await loadRequests(); // Refresh the lists
       if (_visibleRequests.value > _serviceRequests.length) {
         _visibleRequests.value = _serviceRequests.length;
       } // هنا باكد قيمة الفيزيبل ريكويستس عشان ال item count of the listview.builder
-      Get.snackbar('Request Hidden', 'Request has been hidden');
+
+      await _firestore.collection('requests').doc(requestId).update({
+        'status':"refused"
+      });
+      Get.snackbar('Request Hidden'.tr, 'Request has been hidden'.tr,
+      colorText:Colors.white,backgroundColor:Colors.green,
+          snackPosition:SnackPosition.BOTTOM,duration:const Duration(seconds: 1)
+      );
+
     } catch (e) {
       Get.snackbar('Error', 'Failed to hide request: $e');
     }
@@ -354,6 +362,7 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
       await _firestore.collection('requests').doc(requestId).update({
         'servicePricing': price,
         'hiddenByProvider': true,
+        'status':"accepted"
       });
 
       await loadRequests(); // Refresh the list
@@ -378,7 +387,6 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
 
   // Send an offer (update request in Firestore)
   Future<void> sendOffer(String requestId, String price) async {
-
     print("request===$requestId");
     // Validate service pricing
     if (price.isEmpty ||
@@ -404,6 +412,8 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
       print("E=111==$e");
     }
   }
+
+
 
 
   // sendNewOffer(String requestId)async{

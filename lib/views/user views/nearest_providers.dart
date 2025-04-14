@@ -22,21 +22,30 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
    @override
   void initState() {
      controller.getServiceProviders();
-    super.initState();
+    // controller.checkForOrder();
+     super.initState();
   }
   @override
   Widget build(BuildContext context) {
+
+    Locale? currentLocale = Get.locale;
+
+// Get language code (returns 'en' or 'ar')
+    String languageCode = Get.locale?.languageCode ?? 'ar';
+
+
     return GetBuilder<NearProviderController>(
       builder: (_) {
         return Scaffold(
           appBar: AppBar(
+
             title: Text(
               'Nearest Car Transporters'.tr,
-              style: const TextStyle(
-                  color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
             ),
           ),
-          body: FutureBuilder(
+          body:
+
+          FutureBuilder(
             future: requestLocationPermission(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -98,105 +107,241 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
                             ),
                           ),
                           // List of Nearby Providers
-                          Expanded(
+
+                          (controller.check == false)
+                              ? Expanded(
                             flex: 3,
                             child: ListView.builder(
                               itemCount: controller.providers.length,
                               itemBuilder: (context, index) {
-                                final provider =controller. providers[index];
-                                return Card(
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 16),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 12),
-                                    leading: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.orangeAccent.withOpacity(0.2),
-                                        shape: BoxShape.circle,
+                                final provider = controller.providers[index];
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        spreadRadius: 2,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
                                       ),
-                                      padding: const EdgeInsets.all(8),
-                                      child: const Icon(Icons.car_crash,
-                                          color: Colors.orangeAccent),
+                                    ],
+                                  ),
+                                  child: Card(
+                                    elevation: 0, // Using custom shadow instead
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
-                                    title: Text(
-                                      provider.name,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                                    subtitle: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              '${provider.distance.toStringAsFixed(2)} ',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: primary,
-                                              ),
-                                            ),
-                                            Text(
-                                              "km away".tr,
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
+                                    margin: EdgeInsets.zero,
+                                    child: ListTile(
+                                      contentPadding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 12),
+                                      leading: Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.orangeAccent.withOpacity(0.8),
+                                              Colors.deepOrange.withOpacity(0.8),
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.orange.withOpacity(0.4),
+                                              blurRadius: 8,
+                                              spreadRadius: 2,
+                                            )
                                           ],
                                         ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          "${'Status'.tr}: ${provider.status}",
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                            color: (provider.status == 'متاح')
-                                                ? Colors.green
-                                                : Colors.red,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          "${'Car_transporter_sizes:'.tr} "
-                                              "${provider.carTransporterSizes.join(', ')}"
-                                              .replaceAll('small','صغيرة')
-                                              .replaceAll('meduim','متوسطة')
-                                              .replaceAll('large','كبيرة'),
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black87,
-                                          ),
-                                          softWrap: true,
-                                        ),
-                                      ],
-                                    ),
-                                    trailing: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        shape: BoxShape.circle,
+                                        padding: const EdgeInsets.all(12),
+                                        child: const Icon(Icons.local_shipping_rounded,
+                                            color: Colors.white, size: 24),
                                       ),
-                                      padding: const EdgeInsets.all(6),
-                                      child: const Icon(Icons.arrow_forward_ios,
-                                          size: 16, color: Colors.black54),
+                                      title: Text(
+                                        provider.name,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            letterSpacing: 0.2),
+                                      ),
+                                      subtitle: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(Icons.location_on_outlined,
+                                                  size: 16, color: primary),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '${provider.distance.toStringAsFixed(2)} ',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: primary,
+                                                ),
+                                              ),
+                                              Text(
+                                                "km away".tr,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                provider.status == 'متاح'
+                                                    ? Icons.check_circle_outline
+                                                    : Icons.highlight_off_outlined,
+                                                size: 16,
+                                                color: provider.status == 'متاح'
+                                                    ? Colors.green
+                                                    : Colors.red,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                "${'Status'.tr}: ${provider.status}",
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: provider.status == 'متاح'
+                                                      ? Colors.green
+                                                      : Colors.red,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const Icon(Icons.directions_car_filled_outlined,
+                                                  size: 16, color: Colors.black87),
+                                              const SizedBox(width: 4),
+                                              (languageCode=='en')?
+                                              Expanded(
+                                                child: Text(
+                                                  "${'Car_transporter_sizes:'.tr} "
+                                                      "${provider.carTransporterSizes
+                                                      .join(', ')}",
+                                                      // .replaceAll('small', 'صغيرة')
+                                                      // .replaceAll('meduim', 'متوسطة')
+                                                      // .replaceAll('large', 'كبيرة'),
+                                                  style: const TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.black87,
+                                                  ),
+                                                  softWrap: true,
+                                                ),
+                                              ): Expanded(
+                                                child: Text(
+                                                  "${'Car_transporter_sizes:'.tr} "
+                                                      "${provider.carTransporterSizes
+                                                      .join(', ')}"
+                                                  .replaceAll('small', 'صغيرة')
+                                                  .replaceAll('meduim', 'متوسطة')
+                                                  .replaceAll('large', 'كبيرة'),
+                                                  style: const TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.black87,
+                                                  ),
+                                                  softWrap: true,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      trailing: Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.grey.withOpacity(0.1),
+                                              Colors.grey.withOpacity(0.3),
+                                            ],
+                                          ),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        padding: const EdgeInsets.all(10),
+                                        child: const Icon(Icons.arrow_forward_ios_rounded,
+                                            size: 16, color: Colors.black54),
+                                      ),
+                                      onTap: () {
+                                        Get.to(() =>
+                                            ProviderDetailsPage(provider: provider));
+                                      },
                                     ),
-                                    onTap: () {
-                                      Get.to(() =>
-                                          ProviderDetailsPage(provider: provider));
-                                    },
                                   ),
                                 );
                               },
                             ),
-                          ),
+                          )
+                              : Container(
+                            width: MediaQuery.of(context).size.width*0.98,
+                           // height: 100,
+                            margin: const EdgeInsets.symmetric(horizontal: 1, vertical: 2),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: Colors.grey[200],
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.hourglass_top_rounded,
+                                    size: 48,
+                                    color: primary,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    "Your Order Is Waiting To Be Accepted".tr,
+                                    style: TextStyle(
+                                      color: textColorDark,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 2,
+                                          color: Colors.white.withOpacity(0.8),
+                                          offset: const Offset(1, 1),
+                                        ),
+                                      ],
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  ElevatedButton(onPressed: (){
+                                   controller.cancelOrder();
+                                  }, child:
+                                  Text("cancelOrder".tr)),
+                                  const SizedBox(height: 8),
+                                  // CircularProgressIndicator(
+                                  //   strokeWidth: 2,
+                                  //   color: primary,
+                                  // ),
+                                ],
+                              ),
+                            ),
+                          )
                         ],
                       );
                     }
@@ -205,6 +350,11 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
               }
             },
           ),
+
+
+
+
+
         );
       }
     );

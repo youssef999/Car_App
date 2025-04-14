@@ -4,12 +4,25 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'en': {
-
+"cancelOrder":"Cancel Order",
+          "cancelRequest":"Cancel Request",
+          "Refresh":"Refresh",
+          "startOrder":"Started Orders ",
+          "Request Hidden":"Request Hidden",
 "Negotiated":"Negotiated",
 "New Price (SAR)":"New Price (SAR)",
+          "Request has been hidden":"Request has been hidden",
+
+          "providerSentOffer":"Provider Sent Offer",
+
+          "vehicleStatus":"Vehicle Status",
+          "Request cancelled successfully":"Request cancelled successfully",
 
             
           "Submit":"Submit",
+          "No requests found":"No requests found",
+          "Requests":"Requests",
+          "Request":"Request",
           "Cancel":"Cancel",
 
           
@@ -18,6 +31,7 @@ class AppTranslations extends Translations {
           "Negotiate Price": "Negotiate Price",
           "confirm": "Confirm",
           "pending": "Pending",
+          "Your Order Is Waiting To Be Accepted": "Your Order Is Waiting To Be Accepted",
           "View Offers":"View Offers",
           "accepted":"Accepted",
           "Offer sent for Request": "Offer sent for Request",
@@ -75,8 +89,11 @@ class AppTranslations extends Translations {
           'Flat Tire': 'Flat Tire',
           'Dead Battery': 'Dead Battery',
           'Small': 'Small',
+          'small': 'Small',
           'Medium': 'Medium',
+          'medium': 'Medium',
           'Large': 'Large',
+          'large': 'Large',
           'Location': 'Location',
           'under_implementation': 'Pending',
           'rejected': 'Rejected',
@@ -143,14 +160,51 @@ class AppTranslations extends Translations {
           "My Tasks":"My Tasks",
           "New":"New",
 
+  "loadingPoints": "Loading Points",
+  "destinations": "Destinations",
+  "vehicleSize": "Vehicle Size",
+  "requestDate": "Request Date",
+
+
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+
+          "settingsTitle": "Settings",
+          "profileSection": "Profile",
+          "personalInfoSubtitle": "Update your personal information",
+          "accountSettings": "Account Settings",
+          "language": "Language",
+          "notifications": "Notifications",
+          "privacySecurity": "Privacy & Security",
+          "appSettings": "App Settings",
+          "helpCenter": "Help Center",
+          "aboutApp": "About App",
+          "logout": "Logout",
+          "chooseLanguage": "Choose Language",
+          "english": "English",
+          "arabic": "Arabic",
+
+          "viewProviderOffer":"View Provider Offers",
+
+
         },
         'ar': {
-
+          "Request cancelled successfully":"تم حذف طلبك بنجاح ",
+          "cancelRequest":"حدف الطلب ",
+          "No requests found":"لا طلبات متاحة ",
+          "Refresh":"تحديث",
+          "Requests":"طلباتك",
+          "providerSentOffer":"تم ارسال عرض من مقدم الخدمة",
+          "Request has been hidden":"تم إخفاء الطلب",
+          "Your Order Is Waiting To Be Accepted":"طلبك بانتظار عرض مقدم الخدمة ",
           "New":"جديد",
+          "cancelOrder":"إلغاء الطلب",
+          "startOrder":"قيد التنفيذ الان ",
 
          // "Offer Accepted":"بانتظار موافقة مقدم الخدمة علي التفاوض",
 
           "My Tasks":"المهام",
+          "Request Hidden":"طلب مخفي",
 
           "No active tasks":"لا يوجد مهام نشطة",
           "No completed tasks yet":"لا يوجد مهام مكتملة بعد",
@@ -217,8 +271,15 @@ class AppTranslations extends Translations {
           "Location of Loading": "موقع التحميل",
           "Car Malfunction Cause": "سبب المشكلة",
           "Small": "صغير",
+          "small": "صغير",
+          "small,": "صغير",
           "Medium": "متوسط",
+          "medium": "متوسط",
+          "medium,": "متوسط",
+          "meduim": "متوسط",
           "Large": "كبير",
+          "large": "كبير",
+          "large,": "كبير",
           "Provider Details": "تفاصيل المقدم",
           "Status": "الحالة",
           "Car_transporter_sizes:": "مقاسات السطحة:",
@@ -270,9 +331,7 @@ class AppTranslations extends Translations {
           'Broken Engine': 'عطل في المحرك',
           'Flat Tire': 'اطارات مسطحة',
           'Dead Battery': 'بطارية فارغة',
-          'Small': 'صغيرة',
-          'Medium': 'متوسطة',
-          'Large': 'كبيرة',
+
           'Location': 'موقع',
           'under_implementation': 'قيد التنفيذ',
           'rejected': 'مرفوضة',
@@ -293,7 +352,36 @@ class AppTranslations extends Translations {
           'City': 'المدينة',
           'District': 'الحي',
           'No notifications found': 'لا يوجد اشعارات جديدة',
-          'Notifications': 'إشعارات'
+          'Notifications': 'إشعارات',
+
+          "loadingPoints": "نقاط التحميل",
+          "destinations": "الوجهات",
+          "vehicleSize": "حجم المركبة",
+          "requestDate": "تاريخ الطلب",
+
+
+            "completed": "مكتمل",
+            "cancelled": "ملغى",
+          "Request":"الطلب : ",
+
+          "settingsTitle": "الإعدادات",
+          "profileSection": "الملف الشخصي",
+          "personalInfoSubtitle": "قم بتحديث معلوماتك الشخصية",
+          "accountSettings": "إعدادات الحساب",
+          "language": "اللغة",
+          "notifications": "الإشعارات",
+          "privacySecurity": "الخصوصية والأمان",
+          "appSettings": "إعدادات التطبيق",
+          "helpCenter": "مركز المساعدة",
+          "aboutApp": "حول التطبيق",
+          "logout": "تسجيل الخروج",
+          "chooseLanguage": "اختر اللغة",
+          "english": "الإنجليزية",
+          "arabic": "العربية",
+          "viewProviderOffer":"عرض العروض المقدمة",
+          "vehicleStatus":"سبب الطلب "
+
+
         },
         'ur': {
           'Region': 'علاقہ',

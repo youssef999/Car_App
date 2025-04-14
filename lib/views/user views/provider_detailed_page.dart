@@ -5,7 +5,10 @@ import 'package:first_project/models/provider_model.dart';
 import 'package:first_project/values/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
+
+import 'main_user_page.dart';
 
 class ProviderDetailsPage extends StatelessWidget {
   final Provider provider;
@@ -390,12 +393,7 @@ class ProviderDetailsPage extends StatelessWidget {
   }
 
   void submitRequest() {
-    /*
-      _destinationRegion.value = value!;
-                _destinationCity.value = ''; // Reset city when region changes
-                _destinationDistrict.value =
-                    '';
-     */
+
     sendRequestToProvider(
       providerId: provider.id,
       userId:'1',
@@ -411,6 +409,7 @@ class ProviderDetailsPage extends StatelessWidget {
     );
     // Simulate a network request
     Future.delayed(const Duration(seconds: 2), () {
+      Get.off(MainUserPage());
       _isSubmitting.value = false;
       Get.snackbar(
         'Success'.tr,
@@ -473,7 +472,12 @@ class ProviderDetailsPage extends StatelessWidget {
       // Set the data in the document
       await docRef.set(requestData);
 
+      final box=GetStorage();
+
+      box.write("request_id",docRef.id.toString());
+
       print('Request sent successfully with ID: ${docRef.id}');
+
     } catch (e) {
       print('Error sending request: $e');
       // You might want to rethrow the error or handle it differently
