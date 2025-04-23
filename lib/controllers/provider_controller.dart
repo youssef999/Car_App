@@ -52,52 +52,49 @@ class ProviderController extends GetxController {
 
 
 
-Future<void> updateOffersByRequestId({
-  required String offerId,
-  required String requestId,
-  required Map<String, dynamic> updateData,
-}) async {
+  Future<void> updateOffersByRequestId({
+    required String offerId,
+    required String requestId,
+    required Map<String, dynamic> updateData,
+  }) async {
+    print("UPDATE OFFERS TO REJECTED....");
+    try {
+      final firestore = FirebaseFirestore.instance;
 
-  print("UPDATE OFFERS TO REJETCEDDDDD....");
-  try {
-    final firestore = FirebaseFirestore.instance;
-    
-    // First update the specific offer by ID
-    await firestore.collection('offers').doc(offerId).update(updateData);
-    
-    // Then update all other offers with matching requestId
-    // that are neither 'Done' nor 'Started'
-    final querySnapshot = await firestore.collection('offers')
-        .where('requestId', isEqualTo: requestId)
-        .where('status', whereNotIn: ['Done', 'Started']) // Correct way to exclude multiple statuses
-        .where(FieldPath.documentId, isNotEqualTo: offerId)
-        .get();
+      // Get all offers for this request except the specified offerId
+      final querySnapshot = await firestore.collection('offers')
+          .where('requestId', isEqualTo: requestId)
+          .where('offerId', isNotEqualTo: offerId)
+          .get();
 
-    // Batch update all matching offers
-    final batch = firestore.batch();
-    for (final doc in querySnapshot.docs) {
-      batch.update(doc.reference, updateData);
+      // Create a batch for atomic updates
+      final batch = firestore.batch();
+
+      // Update each matching document
+      for (final doc in querySnapshot.docs) {
+        batch.update(doc.reference, updateData);
+      }
+
+      // Commit the batch update
+      await batch.commit();
+
+      print('Successfully updated ${querySnapshot.size} offers');
+      Get.snackbar('Success', '${querySnapshot.size} offers updated successfully');
+    } catch (e) {
+      print('Error updating offers: $e');
+      Get.snackbar('Error', 'Failed to update offers: ${e.toString()}');
+      rethrow;
     }
-    
-    await batch.commit();
-    
-    print('Successfully updated ${querySnapshot.size + 1} offers');
-    Get.snackbar('Success', 'Offers updated successfully'); // Show success message
-  } catch (e) {
-    print('Error updating offers: $e');
-    Get.snackbar('Error', 'Failed to update offers: ${e.toString()}'); // Show error message
-    rethrow;
   }
-}
 
 
 
 Future<void> updateOfferStatus(String status, String id,String requestId) async {
+    print("STATE======$status");
   try {
     // Get reference to the Firestore collection
     final CollectionReference offersCollection = 
         FirebaseFirestore.instance.collection('offers');
-    
     // Update the document with the matching ID
     await offersCollection.doc(id).update({
       'status': status,
@@ -105,10 +102,8 @@ Future<void> updateOfferStatus(String status, String id,String requestId) async 
     });
     
     print('Offer $id updated successfully with status: $status');
-    
-
     if(status == 'Started'){
-Get.snackbar(
+   Get.snackbar(
   'Start Task'.tr, '',
   //'تم الموافقة ويتم بدء المهمة', '',
     backgroundColor:Colors.green,
@@ -131,19 +126,56 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
     }
     fetchOrders();
 
-    updateOffersByRequestId(offerId: id, requestId: requestId, 
+    updateOffersByRequestId(offerId: id, requestId: requestId,
     updateData: {
       'status': 'Rejected'
     }
-    
+
     );
-
-
+    updateRequestByRequestId(
+        requestId: requestId
+    );
   } catch (e) {
     print('Error updating offer status: $e');
     rethrow; // Re-throw the error if you want calling code to handle it
   }
 }
+
+
+  Future<void> updateRequestByRequestId({
+    required String requestId,
+  }) async {
+    print("UPDATE OFFERS TO REJECTED....");
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      // Get all offers for this request except the specified offerId
+      final querySnapshot = await firestore.collection('requests')
+          .where('id', isEqualTo: requestId)
+          .get();
+
+      // Create a batch for atomic updates
+      final batch = firestore.batch();
+
+      // Update each matching document
+      for (final doc in querySnapshot.docs) {
+        batch.update(doc.reference, {
+          'status': 'done'
+        });
+      }
+      // Commit the batch update
+      await batch.commit();
+      print('Successfully updated ${querySnapshot.size} offers');
+      Get.snackbar('Success', '${querySnapshot.size} offers updated successfully');
+    } catch (e) {
+      print('Error updating offers: $e');
+      Get.snackbar('Error', 'Failed to update offers: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+
+
 
 
   final RxList<RequestModel> servicePendingRequests 
@@ -163,14 +195,16 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
   ///
 
   Future<void> loadPendingRequests() async {
+    print("LOADING PENDING REQUESTS");
     _isLoading.value = true;
     try {
       final querySnapshot = await _firestore
           .collection('requests')
           .where('providerId', isEqualTo: "FggHT4Zv4CdEmX4RQqZx")
          // .where('providerId', isEqualTo: "123456789")
-          .where('status', isEqualTo: 'pending') // Exclude hidden orders
-          // .orderBy('time', descending: true)
+         // .where('status', isEqualTo: 'pending') // Exclude hidden orders
+          .where('status', isEqualTo: 'accepted') // Exclude hidden orders
+          .orderBy('timestamp', descending: true)
           // للاسف مش شغال معايا -_0
           .get();
       // .where('providerId', isEqualTo: providerId)
@@ -475,9 +509,7 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
 
    print("f==="+filter);
     if(filter=='pending'||filter=='Pending'){
-
       loadPendingRequests();
-      
     }else{
     fetchOrders();
     } // Fetch orders based on the new filter
@@ -550,7 +582,6 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
   }
 
   Future<void> confirmOrder(String orderId) async {
-
     print("order id===$orderId");
     try {
       // 1. Update offer status

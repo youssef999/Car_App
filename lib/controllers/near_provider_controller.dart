@@ -35,7 +35,7 @@ class NearProviderController extends GetxController {
         return Provider.fromMap(data);
       }).where((provider) {
         double distance = Geolocator.distanceBetween(
-          userLat,
+         userLat,
           userLng,
           provider.location.latitude,
           provider.location.longitude,

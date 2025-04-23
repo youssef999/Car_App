@@ -28,17 +28,16 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
   @override
   Widget build(BuildContext context) {
 
-    Locale? currentLocale = Get.locale;
-
-// Get language code (returns 'en' or 'ar')
-    String languageCode = Get.locale?.languageCode ?? 'ar';
+//     Locale? currentLocale = Get.locale;
+// // Get language code (returns 'en' or 'ar')
+//     String languageCode = Get.locale?.languageCode ?? 'ar';
 
 
     return GetBuilder<NearProviderController>(
       builder: (_) {
         return Scaffold(
           appBar: AppBar(
-
+            centerTitle: true,
             title: Text(
               'Nearest Car Transporters'.tr,
             ),
@@ -225,23 +224,24 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
                                               const Icon(Icons.directions_car_filled_outlined,
                                                   size: 16, color: Colors.black87),
                                               const SizedBox(width: 4),
-                                              (languageCode=='en')?
-                                              Expanded(
-                                                child: Text(
-                                                  "${'Car_transporter_sizes:'.tr} "
-                                                      "${provider.carTransporterSizes
-                                                      .join(', ')}",
-                                                      // .replaceAll('small', 'صغيرة')
-                                                      // .replaceAll('meduim', 'متوسطة')
-                                                      // .replaceAll('large', 'كبيرة'),
-                                                  style: const TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.black87,
-                                                  ),
-                                                  softWrap: true,
-                                                ),
-                                              ): Expanded(
+                                              // (languageCode=='en')?
+                                              // Expanded(
+                                              //   child: Text(
+                                              //     "${'Car_transporter_sizes:'.tr} "
+                                              //         "${provider.carTransporterSizes
+                                              //         .join(', ')}",
+                                              //         // .replaceAll('small', 'صغيرة')
+                                              //         // .replaceAll('meduim', 'متوسطة')
+                                              //         // .replaceAll('large', 'كبيرة'),
+                                              //     style: const TextStyle(
+                                              //       fontSize: 13,
+                                              //       fontWeight: FontWeight.w600,
+                                              //       color: Colors.black87,
+                                              //     ),
+                                              //     softWrap: true,
+                                              //   ),
+                                             /// ):
+                                    Expanded(
                                                 child: Text(
                                                   "${'Car_transporter_sizes:'.tr} "
                                                       "${provider.carTransporterSizes

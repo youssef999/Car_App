@@ -27,7 +27,6 @@ class MainUserPage extends StatelessWidget {
           case 0:
             return NearestProvidersPage();
           case 1:
-
             return const RequestsView();
           case 2:
             return OffersPage();

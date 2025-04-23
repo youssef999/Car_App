@@ -1,5 +1,5 @@
-// ignore_for_file: unused_local_variable, avoid_print
 
+// ignore_for_file: unused_local_variable, avoid_print
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,7 +13,9 @@ import 'package:first_project/views/provider%20views/provider_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-void main() async {
+
+  void main() async {
+    
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await Firebase.initializeApp(); // Initialize Firebase Messaging
@@ -35,15 +37,16 @@ void main() async {
 
   // Listen for incoming messages
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    // ignore: duplicate_ignore
+    // ignore: avoid_print
     print(
         'Received a message while in the foreground: ${message.notification?.title}');
     // Show a local notification or update the UI
   });
   // Set the background handler
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   runApp(const MyApp());
-}
+ }
 
 void initializeNotificationChannel() {
   AwesomeNotifications().initialize(
@@ -69,6 +72,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: redTheme,
@@ -78,16 +82,18 @@ class MyApp extends StatelessWidget {
       home: LoginPage(),
       //NearestProvidersPage(),
       //endRequestsPage(),
-      getPages: [
+      getPages:[
         GetPage(name: '/HomeView', page: () => const HomeView()),
         GetPage(name: '/OtpView', page: () => OtpView()),
         GetPage(name: '/ProviderDashboard', page: () => ProviderDashboard())
       ],
     );
-  }
+   }
 }
 
 Future<void> configureFirebaseMessaging() async {
+  // ignore: duplicate_ignore
+  // ignore: avoid_print
   print("NOTIF");
   FirebaseMessaging.instance
       .getInitialMessage()
@@ -112,6 +118,8 @@ Future<void> configureFirebaseMessaging() async {
 
 void _handleNotification(RemoteMessage message) {
   final String? route = message.data['route'];
+  // ignore: duplicate_ignore
+  // ignore: avoid_print
   print("ROUTE===$route");
   // Pass route from the notification payload
   if (route != null) {
