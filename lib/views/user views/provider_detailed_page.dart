@@ -1,5 +1,9 @@
+
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:first_project/main.dart';
+import 'package:first_project/helper/custom_appbar.dart';
+import 'package:first_project/helper/custom_button.dart';
 import 'package:first_project/models/KSA_places.dart';
 import 'package:first_project/models/provider_model.dart';
 import 'package:first_project/values/colors.dart';
@@ -7,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
-
+import '../../main.dart';
 import 'main_user_page.dart';
 
 class ProviderDetailsPage extends StatelessWidget {
@@ -20,12 +24,10 @@ class ProviderDetailsPage extends StatelessWidget {
   final _malfunctionCause = 'Traffic Accident'.obs;
   final _isSubmitting = false.obs;
 
-  // For Location of Loading
   final RxString _loadingRegion = ''.obs;
   final RxString _loadingCity = ''.obs;
   final RxString _loadingDistrict = ''.obs;
 
-// For Destination
   final RxString _destinationRegion = ''.obs;
   final RxString _destinationCity = ''.obs;
   final RxString _destinationDistrict = ''.obs;
@@ -33,241 +35,127 @@ class ProviderDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Provider Details'.tr),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Provider Information
-              _buildProviderInfo(),
-              const SizedBox(height: 24),
-              Text('Please enter the following data : '.tr),
+      appBar:CustomAppBar(title: 'Provider Details'.tr,),
+      body: Container(
+        color: Colors.grey[100],
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProviderInfo(),
+                const SizedBox(height: 24),
+                _buildSectionTitle('Please enter the following data:'.tr),
+                const SizedBox(height: 16),
 
-              // Car Size Selection
-              _buildSectionTitle('Car Size'.tr),
-              _buildCarSizeSelection(),
-              const SizedBox(height: 16),
+                _buildSectionTitle('Car Size'.tr),
+                _buildCarSizeSelection(),
+                const SizedBox(height: 16),
 
-              // Malfunction Cause Selection
-              _buildSectionTitle('Car Malfunction Cause'.tr),
-              _buildMalfunctionCauseSelection(),
-              const SizedBox(height: 16),
+                _buildSectionTitle('Car Malfunction Cause'.tr),
+                _buildMalfunctionCauseSelection(),
+                const SizedBox(height: 16),
 
-              // Location of Loading (Dropdowns)
-              _buildSectionTitle('Location of Loading'.tr),
-              _buildLocationDropdowns(),
-              const SizedBox(height: 16),
+                _buildSectionTitle('Location of Loading'.tr),
+                _buildLocationDropdowns(),
+                const SizedBox(height: 16),
 
-              // Destination (Dropdowns)
-              _buildSectionTitle('Destination'.tr),
-              _buildDestinationDropdowns(),
-              const SizedBox(height: 24),
+                _buildSectionTitle('Destination'.tr),
+                _buildDestinationDropdowns(),
+                const SizedBox(height: 32),
 
-              // Submit Button
-              _buildSubmitButton(),
-            ],
+                _buildSubmitButton(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildLocationDropdowns() {
-    return Column(
-      children: [
-        // Region Dropdown
-        Obx(() => DropdownButtonFormField<String>(
-              value: _loadingRegion.value.isEmpty ? null : _loadingRegion.value,
-              onChanged: (value) {
-                _loadingRegion.value = value!;
-                _loadingCity.value = ''; // Reset city when region changes
-                _loadingDistrict.value =
-                    ''; // Reset district when region changes
-              },
-              items: KSA.regions.keys.map((region) {
-                return DropdownMenuItem(
-                  value: region,
-                  child: Text(region),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Region'.tr,
-                border: const OutlineInputBorder(),
-              ),
-            )),
-        const SizedBox(height: 16),
-
-        // City Dropdown
-        Obx(() => DropdownButtonFormField<String>(
-              value: _loadingCity.value.isEmpty ? null : _loadingCity.value,
-              onChanged: (value) {
-                _loadingCity.value = value!;
-                _loadingDistrict.value = ''; // Reset district when city changes
-              },
-              items: _loadingRegion.value.isEmpty
-                  ? []
-                  : KSA.regions[_loadingRegion.value]!.keys.map((city) {
-                      return DropdownMenuItem(
-                        value: city,
-                        child: Text(city),
-                      );
-                    }).toList(),
-              decoration: InputDecoration(
-                labelText: 'City'.tr,
-                border: const OutlineInputBorder(),
-              ),
-            )),
-        const SizedBox(height: 16),
-
-        // District Dropdown
-        Obx(() => DropdownButtonFormField<String>(
-              value: _loadingDistrict.value.isEmpty
-                  ? null
-                  : _loadingDistrict.value,
-              onChanged: (value) {
-                _loadingDistrict.value = value!;
-              },
-              items: _loadingCity.value.isEmpty
-                  ? []
-                  : KSA.regions[_loadingRegion.value]![_loadingCity.value]!
-                      .map((district) {
-                      return DropdownMenuItem(
-                        value: district,
-                        child: Text(district),
-                      );
-                    }).toList(),
-              decoration: InputDecoration(
-                labelText: 'District'.tr,
-                border: const OutlineInputBorder(),
-              ),
-            )),
-      ],
-    );
-  }
-
-  Widget _buildDestinationDropdowns() {
-    return Column(
-      children: [
-        // Region Dropdown
-        Obx(() => DropdownButtonFormField<String>(
-              value: _destinationRegion.value.isEmpty
-                  ? null
-                  : _destinationRegion.value,
-              onChanged: (value) {
-                _destinationRegion.value = value!;
-                _destinationCity.value = ''; // Reset city when region changes
-                _destinationDistrict.value =
-                    ''; // Reset district when region changes
-              },
-              items: KSA.regions.keys.map((region) {
-                return DropdownMenuItem(
-                  value: region,
-                  child: Text(region),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Region'.tr,
-                border: const OutlineInputBorder(),
-              ),
-            )),
-        const SizedBox(height: 16),
-
-        // City Dropdown
-        Obx(() => DropdownButtonFormField<String>(
-              value: _destinationCity.value.isEmpty
-                  ? null
-                  : _destinationCity.value,
-              onChanged: (value) {
-                _destinationCity.value = value!;
-                _destinationDistrict.value =
-                    ''; // Reset district when city changes
-              },
-              items: _destinationRegion.value.isEmpty
-                  ? []
-                  : KSA.regions[_destinationRegion.value]!.keys.map((city) {
-                      return DropdownMenuItem(
-                        value: city,
-                        child: Text(city),
-                      );
-                    }).toList(),
-              decoration: InputDecoration(
-                labelText: 'City'.tr,
-                border: const OutlineInputBorder(),
-              ),
-            )),
-        const SizedBox(height: 16),
-
-        // District Dropdown
-        Obx(() => DropdownButtonFormField<String>(
-              value: _destinationDistrict.value.isEmpty
-                  ? null
-                  : _destinationDistrict.value,
-              onChanged: (value) {
-                _destinationDistrict.value = value!;
-              },
-              items: _destinationCity.value.isEmpty
-                  ? []
-                  : KSA.regions[_destinationRegion.value]![
-                          _destinationCity.value]!
-                      .map((district) {
-                      return DropdownMenuItem(
-                        value: district,
-                        child: Text(district),
-                      );
-                    }).toList(),
-              decoration: InputDecoration(
-                labelText: 'District'.tr,
-                border: const OutlineInputBorder(),
-              ),
-            )),
-      ],
-    );
-  }
-
-  // Other methods (_buildProviderInfo, _buildCarSizeSelection, etc.) remain unchanged
-
   Widget _buildProviderInfo() {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              provider.name,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${provider.distance.toString().substring(0, 4)} ',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                Column(
+                  children: [
+                    Text(
+                      provider.name,
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on, color: Colors.grey[600], size: 20),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${provider.distance.toStringAsFixed(2)}'+" "+'km away'.tr,
+                          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: provider.status == 'نشط' ? Colors.green[100] : Colors.red[100],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${'Status'.tr}: ${provider.status}',
+                            style: TextStyle(
+                              color: provider.status == 'نشط' ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    ),
+
+                  ],
                 ),
-                Text(
-                  'km away'.tr,
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                Column(
+                  children: [
+                    Row(children: [
+                      const Icon(Icons.star,color: Colors.amberAccent,
+                      size: 20,
+                      ),
+                    const  SizedBox(width: 5,),
+                      Text(provider.rate.toStringAsFixed(2),
+                        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),),
+                    ],),
+                    const SizedBox(height: 6,),
+                    Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color:buttonColor
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("VIEW REVIEWS".tr,style:TextStyle(color:Colors.white),),
+                        )),
+                  ],
                 ),
+                               //   const SizedBox(height: 10,)
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              "${'Status'.tr}: ${provider.status}",
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: (provider.status == 'متاح') ? Colors.green : Colors.red,
-              ),
-            ),
+
+
+
           ],
         ),
       ),
@@ -279,118 +167,166 @@ class ProviderDetailsPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Text(
         title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
       ),
     );
   }
 
   Widget _buildCarSizeSelection() {
     return Obx(() => Column(
-          children: ['Small'.tr, 'Medium'.tr, 'Large'.tr].map((size) {
-            return Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: RadioListTile(
-                title: Text(size),
-                value: size,
-                groupValue: _carSize.value,
-                onChanged: (value) {
-                  _carSize.value = value!;
-                },
-              ),
-            );
-          }).toList(),
-        ));
+      children: ['Small'.tr, 'Medium'.tr, 'Large'.tr].map((size) {
+        return Card(
+          elevation: 2,
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: RadioListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            title: Text(size),
+            value: size,
+            groupValue: _carSize.value,
+            onChanged: (value) => _carSize.value = value!,
+          ),
+        );
+      }).toList(),
+    ));
   }
 
   Widget _buildMalfunctionCauseSelection() {
     return Obx(() => Column(
-          children:
-              ['Traffic Accident'.tr, 'Technical Malfunction'.tr].map((cause) {
-            return Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: RadioListTile(
-                title: Text(cause),
-                value: cause,
-                groupValue: _malfunctionCause.value,
-                onChanged: (value) {
-                  _malfunctionCause.value = value!;
-                },
-              ),
-            );
-          }).toList(),
-        ));
+      children: ['Traffic Accident'.tr, 'Technical Malfunction'.tr].map((cause) {
+        return Card(
+          elevation: 2,
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: RadioListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            title: Text(cause),
+            value: cause,
+            groupValue: _malfunctionCause.value,
+            onChanged: (value) => _malfunctionCause.value = value!,
+          ),
+        );
+      }).toList(),
+    ));
   }
 
-  Widget _buildStaticLocationText() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text(
-          'العبور',
-          style: TextStyle(fontSize: 16),
-        ),
-      ),
+  Widget _buildLocationDropdowns() {
+    return _buildDropdownSection(
+      regionValue: _loadingRegion,
+      cityValue: _loadingCity,
+      districtValue: _loadingDistrict,
     );
   }
 
-  Widget _buildStaticDestinationText() {
-    return Card(
+  Widget _buildDestinationDropdowns() {
+    return _buildDropdownSection(
+      regionValue: _destinationRegion,
+      cityValue: _destinationCity,
+      districtValue: _destinationDistrict,
+    );
+  }
+
+  Widget _buildDropdownSection({
+    required RxString regionValue,
+    required RxString cityValue,
+    required RxString districtValue,
+  }) {
+    return Column(
+      children: [
+        _buildDropdown(
+          label: 'Region'.tr,
+          value: regionValue,
+          items: KSA.regions.keys.toList(),
+          onChanged: (value) {
+            regionValue.value = value!;
+            cityValue.value = '';
+            districtValue.value = '';
+          },
+        ),
+        const SizedBox(height: 12),
+        _buildDropdown(
+          label: 'City'.tr,
+          value: cityValue,
+          items: regionValue.value.isEmpty
+              ? []
+              : KSA.regions[regionValue.value]!.keys.toList(),
+          onChanged: (value) {
+            cityValue.value = value!;
+            districtValue.value = '';
+          },
+        ),
+        const SizedBox(height: 12),
+        _buildDropdown(
+          label: 'District'.tr,
+          value: districtValue,
+          items: cityValue.value.isEmpty
+              ? []
+              : KSA.regions[regionValue.value]![cityValue.value]!,
+          onChanged: (value) => districtValue.value = value!,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdown({
+    required String label,
+    required RxString value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Obx(() => Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text(
-          'مدينة نصر',
-          style: TextStyle(fontSize: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: DropdownButtonFormField<String>(
+          value: value.value.isEmpty ? null : value.value,
+          onChanged: onChanged,
+          items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
+          decoration: InputDecoration(
+            labelText: label,
+            border: InputBorder.none,
+          ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildSubmitButton() {
     return Obx(() => SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: buttonColor,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: _isSubmitting.value
-                ? null
-                : () {
-                    if (_formKey.currentState!.validate()) {
-                      _isSubmitting.value = true;
-                      submitRequest();
-                    }
-                  },
-            child: _isSubmitting.value
-                ? const CircularProgressIndicator(color: Colors.white)
-                : Text(
-                    'Send Request'.tr,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: buttonColor,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        onPressed: _isSubmitting.value
+            ? null
+            : () {
+          if (_formKey.currentState!.validate()) {
+            _isSubmitting.value = true;
+            submitRequest();
+          }
+        },
+        child: _isSubmitting.value
+            ? const CircularProgressIndicator(color: Colors.white)
+            : Text(
+          'Send Request'.tr,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
-        ));
+        ),
+      ),
+    ));
   }
+
 
   void submitRequest() {
 
@@ -487,5 +423,5 @@ class ProviderDetailsPage extends StatelessWidget {
 
 
 
-
+// submitRequest() and sendRequestToProvider() methods stay the same as you wrote them.
 }

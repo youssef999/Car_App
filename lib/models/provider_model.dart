@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class Provider {
   final String id;
   final String name;
+  final double rate;
   final LatLng location;
   final String status;
   final List<String> carTransporterSizes;
@@ -13,6 +14,7 @@ class Provider {
     required this.id,
     required this.name,
     required this.location,
+    required this.rate,
     required this.status,
     required this.carTransporterSizes,
     this.distance = 0.0,
@@ -22,6 +24,7 @@ class Provider {
   factory Provider.fromMap(Map<String, dynamic> map) {
     return Provider(
       id: map['id'] ?? '',
+      rate: map['rate']??0.0,
       name: map['name'] ?? '',
       status: map['status'] ?? 'unknown',
       location: LatLng(

@@ -4,6 +4,9 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'en': {
+
+          "Please enter the following data:":"Please enter the following data:",
+          "VIEW REVIEWS":"VIEW REVIEWS",
 "cancelOrder":"Cancel Order",
           "cancelRequest":"Cancel Request",
           "Refresh":"Refresh",
@@ -189,6 +192,9 @@ class AppTranslations extends Translations {
 
         },
         'ar': {
+
+          "Please enter the following data:":"الرجاء ادخال البيانات التالية:",
+          "VIEW REVIEWS":"عرض التقييمات",
           "Request cancelled successfully":"تم حذف طلبك بنجاح ",
           "cancelRequest":"حدف الطلب ",
           "No requests found":"لا طلبات متاحة ",

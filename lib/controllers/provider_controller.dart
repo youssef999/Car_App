@@ -2,7 +2,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:first_project/helper/send_notification.dart';
 import 'package:first_project/main.dart';
 import 'package:first_project/models/client_request_model.dart';
 import 'package:first_project/models/notification_model.dart';
@@ -100,7 +99,7 @@ Future<void> updateOfferStatus(String status, String id,String requestId) async 
       'status': status,
      // 'updatedAt': FieldValue.serverTimestamp(), // Optional: add timestamp
     });
-    
+
     print('Offer $id updated successfully with status: $status');
     if(status == 'Started'){
    Get.snackbar(
@@ -130,8 +129,8 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
     updateData: {
       'status': 'Rejected'
     }
-
     );
+
     updateRequestByRequestId(
         requestId: requestId
     );
@@ -145,15 +144,13 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
   Future<void> updateRequestByRequestId({
     required String requestId,
   }) async {
-    print("UPDATE OFFERS TO REJECTED....");
+    print("........updateRequestByRequestId.........");
     try {
       final firestore = FirebaseFirestore.instance;
 
-      // Get all offers for this request except the specified offerId
       final querySnapshot = await firestore.collection('requests')
           .where('id', isEqualTo: requestId)
           .get();
-
       // Create a batch for atomic updates
       final batch = firestore.batch();
 
@@ -350,7 +347,6 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
     print("...........SEND OFFER........");
     print('req id == $requestId');
     print('request == ${request.toString()}');
-
     // Validate price
     if (price.isEmpty || double.tryParse(price) == null || double.parse(price) <= 0) {
       Get.snackbar(
@@ -361,7 +357,6 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
       );
       return;
     }
-
     try {
       // Fetch provider name from the providers collection
       final providerSnapshot =
@@ -371,10 +366,8 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
       if (providerSnapshot.exists && providerSnapshot.data() != null) {
         providerName = providerSnapshot.data()!['name'] ?? 'Unknown Provider';
       }
-
       // Generate a unique offer ID
       String offerId = _firestore.collection('offers').doc().id;
-
       // Store offer details
       await _firestore.collection('offers').doc(offerId).set({
         'offerId': offerId,
@@ -507,7 +500,7 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
   void updateFilter(String filter) {
     _selectedFilter.value = filter;
 
-   print("f==="+filter);
+   print("f===$filter");
     if(filter=='pending'||filter=='Pending'){
       loadPendingRequests();
     }else{
