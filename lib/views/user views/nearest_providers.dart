@@ -1,5 +1,7 @@
 import 'package:first_project/controllers/near_provider_controller.dart';
 import 'package:first_project/helper/custom_appbar.dart';
+import 'package:first_project/helper/custom_button.dart';
+import 'package:first_project/models/provider_model.dart';
 import 'package:first_project/values/colors.dart';
 import 'package:first_project/views/user%20views/provider_detailed_bottomSheet.dart';
 import 'package:first_project/views/user%20views/provider_detailed_page.dart';
@@ -16,11 +18,36 @@ class NearestProvidersPage extends StatefulWidget {
 
 class _NearestProvidersPageState extends State<NearestProvidersPage> {
   final NearProviderController controller = Get.put(NearProviderController());
+  LatLng? currentLocation;
+  bool isLoading = false;
+  String? errorMessage;
 
   @override
   void initState() {
-    controller.getServiceProviders();
     super.initState();
+    initLocationAndProviders();
+   // controller.getCurrentLocation();
+  //  controller.getServiceProviders();
+  }
+
+  Future<void> initLocationAndProviders() async {
+    try {
+      await requestLocationPermission();
+      currentLocation = await getCurrentLocation();
+      await controller.getServiceProviders();
+      if (currentLocation != null) {
+        for (var provider in controller.providers) {
+          provider.calculateDistanceFrom(currentLocation!);
+        }
+        controller.providers.sort((a, b) => a.distance.compareTo(b.distance));
+      }
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -30,245 +57,417 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
         return Scaffold(
           backgroundColor: backColor,
           appBar: CustomAppBar(title: 'Nearest Car Transporters'.tr),
-          body: FutureBuilder(
-            future: requestLocationPermission(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else {
-                return FutureBuilder<LatLng>(
-                  future: getCurrentLocation(),
-                  builder: (context, locationSnapshot) {
-                    if (locationSnapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (locationSnapshot.hasError) {
-                      return Center(child: Text('Error: ${locationSnapshot.error}'));
-                    } else {
-                      final currentLocation = locationSnapshot.data!;
+          body: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : errorMessage != null
+              ? Center(child: Text('Error: $errorMessage'))
+              : currentLocation == null
+              ?  const Center(child: CircularProgressIndicator())
+       //   const Center(child: Text('Unable to fetch location.'))
+              : buildContent(),
+        );
+      },
+    );
+  }
 
-                      for (var provider in controller.providers) {
-                        provider.calculateDistanceFrom(currentLocation);
-                      }
-                      controller.providers.sort((a, b) => a.distance.compareTo(b.distance));
-
-                      return ListView(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: SizedBox(
-                                height: 250,
-                                child: GoogleMap(
-                                  initialCameraPosition: CameraPosition(
-                                    target: currentLocation,
-                                    zoom: 12,
-                                  ),
-                                  markers: controller.providers.map((provider) {
-                                    return Marker(
-                                      markerId: MarkerId(provider.id),
-                                      position: provider.location,
-                                      infoWindow: InfoWindow(
-                                        title: provider.name,
-                                        snippet: '${provider.distance.toStringAsFixed(2)} km away'.tr,
-                                      ),
-                                      onTap: () {
-                                        showModalBottomSheet(
-                                          context: context,
-                                          shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                                          ),
-                                          builder: (_) => ProviderDetailsBottomSheet(provider: provider),
-                                        );
-                                      },
-                                    );
-                                  }).toSet(),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: controller.check == false
-                                ? ListView.builder(
-                              shrinkWrap: true,
-                              physics:const NeverScrollableScrollPhysics(),
-                              itemCount: controller.providers.length,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              itemBuilder: (context, index) {
-                                final provider = controller.providers[index];
-                                return Container(
-                                  margin: const EdgeInsets.symmetric(vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.3),
-                                        spreadRadius: 2,
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.all(16),
-                                    leading: Container(
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF00BFA5).withOpacity(0.1),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(Icons.car_rental_sharp,
-                                          color: Color(0xFF00BFA5), size: 28),
-                                    ),
-                                    title: Text(
-                                      provider.name,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    subtitle: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 6),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.location_on_outlined,
-                                                size: 16, color: Color(0xFF0C3C78)),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              '${provider.distance.toStringAsFixed(2)} km',
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xFF0C3C78),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              provider.status == 'نشط'
-                                                  ? Icons.check_circle_outline
-                                                  : Icons.highlight_off_outlined,
-                                              size: 16,
-                                              color: provider.status == 'نشط'
-                                                  ? Colors.green
-                                                  : Colors.red,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              "${'Status'.tr}: ${provider.status}",
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
-                                                color: provider.status == 'نشط'
-                                                    ? Colors.green
-                                                    : Colors.red,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Icon(Icons.directions_car_filled_outlined,
-                                                size: 16, color: Colors.black87),
-                                            const SizedBox(width: 4),
-                                            Expanded(
-                                              child: Text(
-                                                "${'Car_transporter_sizes:'.tr} ${provider.carTransporterSizes.join(', ')}"
-                                                    .replaceAll('small', 'صغيرة')
-                                                    .replaceAll('meduim', 'متوسطة')
-                                                    .replaceAll('large', 'كبيرة'),
-                                                style: const TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    trailing: const Icon(Icons.arrow_forward_ios_rounded,
-                                        size: 16, color: Colors.black54),
-                                    onTap: () {
-                                      Get.to(() => ProviderDetailsPage(provider: provider));
-                                    },
-                                  ),
-                                );
-                              },
-                            )
-                                : Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 2,
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.hourglass_top_rounded,
-                                      size: 48, color: Color(0xFF0C3C78)),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    "Your Order Is Waiting To Be Accepted".tr,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF0C3C78),
-                                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    onPressed: controller.cancelOrder,
-                                    child: Text(
-                                      "Cancel Order".tr,
-                                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                         const SizedBox(height: 20,)
-                        ],
+  Widget buildContent() {
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: SizedBox(
+              height: 250,
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: currentLocation!,
+                  zoom: 12,
+                ),
+                markers: controller.providers.map((provider) {
+                  return Marker(
+                    markerId: MarkerId(provider.id),
+                    position: provider.location,
+                    infoWindow: InfoWindow(
+                      title: provider.name,
+                      snippet: '${provider.distance.toStringAsFixed(2)} km away'.tr,
+                    ),
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
+                        builder: (_) => ProviderDetailsBottomSheet(provider: provider),
                       );
-                    }
-                  },
-                );
-              }
+                    },
+                  );
+                }).toSet(),
+              ),
+            ),
+          ),
+        ),
+        controller.check == false ? buildProvidersList() : buildEstimatedTimeAndKm(
+          controller.selectedProvider!
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget buildProvidersList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: controller.providers.length,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemBuilder: (context, index) {
+        final provider = controller.providers[index];
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 2,
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(16),
+            leading: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00BFA5).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.car_rental_sharp, color: Color(0xFF00BFA5), size: 28),
+            ),
+            title: Text(
+              provider.name,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF0C3C78)),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${provider.distance.toStringAsFixed(2)} km',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF0C3C78),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(
+                      provider.status == 'نشط' ? Icons.check_circle_outline : Icons.highlight_off_outlined,
+                      size: 16,
+                      color: provider.status == 'نشط' ? Colors.green : Colors.red,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "${'Status'.tr}: ${provider.status}",
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: provider.status == 'نشط' ? Colors.green : Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.directions_car_filled_outlined,
+                        size: 16, color: Colors.black87),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        "${'Car_transporter_sizes:'.tr} ${provider.carTransporterSizes.join(', ')}"
+                            .replaceAll('small', 'صغيرة')
+                            .replaceAll('meduim', 'متوسطة')
+                            .replaceAll('large', 'كبيرة'),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.black54),
+            onTap: () {
+              Get.to(() => ProviderDetailsPage(provider: provider));
             },
           ),
         );
       },
     );
   }
+
+  Widget buildEstimatedTimeAndKm(Provider provider) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 22),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            spreadRadius: 4,
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Profile + Name + Rating
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 31,
+                backgroundImage: NetworkImage(provider.image?? ''),
+                backgroundColor: Colors.grey.shade200,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                provider.name ?? '',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0C3C78),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.star, color: Colors.amber, size: 20),
+                  const SizedBox(width: 4),
+                  Text(
+                    provider.rate?.toStringAsFixed(1) ?? '0.0',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+
+          // Existing Content
+          (controller.estimatedTime > 0 && controller.isCheckStart==false)
+              ? buildOnWayContent(provider)
+              : buildWaitingContent(provider),
+        ],
+      ),
+    );
+  }
+
+  Widget buildOnWayContent(Provider provider) {
+    return Container(
+
+      decoration:BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        color:Colors.grey[100]
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 20),
+          Text(
+            "provider_on_way".tr,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0C3C78),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "please_wait_provider".tr,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.black54,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          buildDistanceTimeActions(provider),
+        ],
+      ),
+    );
+  }
+
+  Widget buildWaitingContent(Provider provider) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          color:Colors.grey[100]
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+
+          const SizedBox(height: 20),
+          Text(
+            "may be operation start".tr,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0C3C78),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "provider should be here".tr,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.black54,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          buildActionButtons(provider, isSuccessButton: true),
+        ],
+      ),
+    );
+  }
+
+  Widget buildDistanceTimeActions(Provider provider) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Column(
+              children: [
+                const Icon(Icons.place_rounded, size: 30, color: Color(0xFF0C3C78)),
+                const SizedBox(height: 8),
+                Text(
+                  "${controller.distance.toStringAsFixed(1)} ${"km_away".tr}",
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                const Icon(Icons.access_time_filled_rounded, size: 30, color: Color(0xFF0C3C78)),
+                const SizedBox(height: 8),
+                Text(
+                  "${controller.estimatedTime} ${"minutes_estimated".tr}",
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        buildActionButtons(provider, isSuccessButton: false),
+      ],
+    );
+  }
+
+  Widget buildActionButtons(Provider provider, {required bool isSuccessButton}) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: const Icon(Icons.call, size: 20, color: Colors.white),
+              label: Text('Call'.tr, style: const TextStyle(fontSize: 16, color: Colors.white)),
+              onPressed: () {
+                controller.makeCall(provider);
+              },
+            ),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: const Icon(Icons.message, size: 20, color: Colors.white),
+              label: Text('Message'.tr, style: const TextStyle(fontSize: 16, color: Colors.white)),
+              onPressed: () {
+                controller.openWhatsAppChat(provider);
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isSuccessButton ? Colors.green : Colors.red,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              isSuccessButton ? 'Task Success'.tr : 'Cancel'.tr,
+              style: const TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            onPressed: () {
+             if (isSuccessButton==true) {
+               controller.getOfferId(controller.requestId,provider.id);
+           //    controller.rateProvider(provider.id, re, offerId);
+             }
+              //rateProvider
+              // Handle cancel or success
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
 
   Future<void> requestLocationPermission() async {
     final status = await Permission.location.request();

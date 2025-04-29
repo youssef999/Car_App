@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:first_project/helper/send_notification.dart';
 import 'package:first_project/main.dart';
+import 'package:first_project/views/user%20views/main_user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
@@ -40,7 +41,6 @@ class ClientController extends GetxController {
   
   final firestore = FirebaseFirestore.instance;
   TextEditingController commentController = TextEditingController();
-  
 
   double widgetRate=1.0;
   // 1. Show rating dialog
@@ -141,6 +141,7 @@ Get.back();
 
   Get.snackbar('Success', 'Thank you for your feedback!');
 }
+
 
 
 Future<void> updateOffersByRequestId({
@@ -320,13 +321,29 @@ Future<void> fetchDoneOffers() async {
   Future<void> changeOfferStatus(
       ProviderOfferModel offer, String status) async {
 
-    String? token = await FirebaseMessaging.instance.getToken();
+    //String? token = await FirebaseMessaging.instance.getToken();
     try {
       // Update the offer status to 'accepted'
       await _firestore.collection('offers').doc(offer.id).update({
         'status': status,
         'acceptedAt': FieldValue.serverTimestamp(),
       });
+
+      print("STATUS====$status");
+      if(status=='Started'){
+        await _firestore.collection('requests').doc(offer.requestId).update({
+          'status': 'accepted',
+          // 'acceptedAt': FieldValue.serverTimestamp(),
+        });
+      }
+
+      if(status=='Rejected'){
+        await _firestore.collection('requests').doc(offer.requestId).update({
+          'status': 'rejected',
+          // 'acceptedAt': FieldValue.serverTimestamp(),
+        });
+      }
+
       fetchOffers();
       // Send a notification to the provider
       await _firestore.collection('notifications').add({
@@ -375,6 +392,7 @@ Future<void> fetchDoneOffers() async {
       else {
         Get.snackbar('Success'.tr, 'Offer rejected and provider notified'.tr);
       }
+
     } catch (e) {
       Get.snackbar('Error', 'Failed to accept offer: $e');
     }

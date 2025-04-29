@@ -15,8 +15,7 @@ class RequestsController extends GetxController{
 
 
   Future<void> getUserRequests() async {
-
-    userRequestList=[];
+   // userRequestList=[];
 
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -32,6 +31,14 @@ class RequestsController extends GetxController{
       update(); // Notify listeners (if using GetX)
 
       print('Fetched ${userRequestList.length} requests for user 1');
+      print('Fetched data=== ${userRequestList.toString()} requests for user 1');
+
+       // for(int i=0;i<userRequestList.length;i++){
+       //   print('Fetched data=== ${userRequestList[i].providerId} requests for user 1');
+       //   print('Fetched data=== ${userRequestList[i].placeOfLoading} requests for user 1');
+       //   print('Fetched data=== ${userRequestList[i].placeOfLoading2} requests for user 1');
+       //   print('Fetched data=== ${userRequestList[i].placeOfLoading3} requests for user 1');
+       // }
     } catch (e) {
       print('Error fetching user requests: $e');
       // Optionally show error to user

@@ -22,6 +22,16 @@ final ThemeData redTheme = ThemeData(
       fontWeight: FontWeight.bold,
     ),
   ),
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(
+      color: Colors.black, // Text color
+      fontSize: 16,
+    ),
+    bodyMedium: TextStyle(
+      color: Colors.black, // Text color
+      fontSize: 14,
+    ),
+  ),
   buttonTheme:  ButtonThemeData(
     buttonColor: buttonColor,
 

@@ -69,208 +69,214 @@ class _RequestsViewState extends State<RequestsView> {
                     ],
                   ),
                 );
-              }
+              }else{
 
-              return Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: ListView.separated(
-                  itemCount: controller.userRequestList.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final request = controller.userRequestList[index];
-                    final dateFormat = DateFormat('MMM dd, yyyy - hh:mm a');
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Card(
-                        elevation: 0, // Using custom shadow instead
-                        shape: RoundedRectangleBorder(
+
+                print("data===="+controller.userRequestList[0].placeOfLoading);
+                print("data===="+controller.userRequestList[0].placeOfLoading2);
+                print("data===="+controller.userRequestList[0].placeOfLoading3);
+                return Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: ListView.separated(
+                    itemCount: controller.userRequestList.length,
+                    separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final request = controller.userRequestList[index];
+                      final dateFormat = DateFormat('MMM dd, yyyy - hh:mm a');
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 1,
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        margin: EdgeInsets.zero,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Request Header with improved shadow
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.orange.withOpacity(0.1),
-                                      blurRadius: 4,
-                                      spreadRadius: 1,
-                                    ),
+                        child: Card(
+                          elevation: 0, // Using custom shadow instead
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          margin: EdgeInsets.zero,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Request Header with improved shadow
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.orange.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          "${"Request".tr} #  ${request.id.substring(0, 8)}",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.orange,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: _getStatusColor(request.status),
+                                          borderRadius: BorderRadius.circular(20),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: _getStatusColor(request.status).withOpacity(0.3),
+                                              blurRadius: 4,
+                                              spreadRadius: 1,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Text(
+                                          (request.status=='accepted')?
+                                          'providerSentOffer'.tr:
+                                          (request.status).tr.toUpperCase().tr,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                // Divider with subtle shadow
+                                Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.1),
+                                        blurRadius: 2,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Divider(color: Colors.grey[300], height: 1),
+                                ),
+                                const SizedBox(height: 12),
+
+                                // Loading Information with improved layout
+                                _buildLocationSection(
+                                  icon: Icons.upload,
+                                  title: "loadingPoints".tr,
+                                  locations: [
+                                    request.placeOfLoading,
+
+                                    if (request.placeOfLoading2.isNotEmpty) request.placeOfLoading2,
+                                    if (request.placeOfLoading3.isNotEmpty) request.placeOfLoading3,
                                   ],
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                                // Destinations section
+                                _buildLocationSection(
+                                  icon: Icons.location_on,
+                                  title: "destinations".tr,
+                                  locations: [
+                                    request.destination,
+                                    if (request.destination2.isNotEmpty) request.destination2,
+                                    if (request.destination3.isNotEmpty) request.destination3,
+                                  ],
+                                ),
+
+                                const SizedBox(height: 2),
+                                _buildInfoCard(
+                                  icon: Icons.directions_car,
+                                  title: "vehicleStatus".tr,
+                                  value: request.carStatus,
+                                ),
+
+                                // Vehicle and Date Info with improved cards
+                                Row(
                                   children: [
                                     Expanded(
-                                      child: Text(
-                                        "Request".tr+" # "+" "+"${request.id.substring(0, 8)}",
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.orange,
-                                        ),
+                                      child: _buildInfoCard(
+                                        icon: Icons.directions_car,
+                                        title: "vehicleSize".tr,
+                                        value: request.carSize,
                                       ),
                                     ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: _getStatusColor(request.status),
-                                        borderRadius: BorderRadius.circular(20),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: _getStatusColor(request.status).withOpacity(0.3),
-                                            blurRadius: 4,
-                                            spreadRadius: 1,
-                                          ),
-                                        ],
-                                      ),
-                                      child: Text(
-
-                                        (request.status=='accepted')?
-                                        'providerSentOffer'.tr:
-                                        (request.status).tr.toUpperCase().tr,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: _buildInfoCard(
+                                        icon: Icons.calendar_today,
+                                        title: "requestDate".tr,
+                                        value: dateFormat.format(request.time),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                              const SizedBox(height: 12),
-
-                              // Divider with subtle shadow
-                              Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.1),
-                                      blurRadius: 2,
-                                      spreadRadius: 1,
-                                    ),
-                                  ],
-                                ),
-                                child: Divider(color: Colors.grey[300], height: 1),
-                              ),
-                              const SizedBox(height: 12),
-
-                              // Loading Information with improved layout
-                              _buildLocationSection(
-                                icon: Icons.upload,
-                                title: "loadingPoints".tr,
-                                locations: [
-                                  request.placeOfLoading,
-                                  if (request.placeOfLoading2.isNotEmpty) request.placeOfLoading2,
-                                  if (request.placeOfLoading3.isNotEmpty) request.placeOfLoading3,
-                                ],
-                              ),
-
-                              // Destinations section
-                              _buildLocationSection(
-                                icon: Icons.location_on,
-                                title: "destinations".tr,
-                                locations: [
-                                  request.destination,
-                                  if (request.destination2.isNotEmpty) request.destination2,
-                                  if (request.destination3.isNotEmpty) request.destination3,
-                                ],
-                              ),
-
-                              const SizedBox(height: 2),
-                              _buildInfoCard(
-                                icon: Icons.directions_car,
-                                title: "vehicleStatus".tr,
-                                value: request.carStatus,
-                              ),
-
-                              // Vehicle and Date Info with improved cards
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildInfoCard(
-                                      icon: Icons.directions_car,
-                                      title: "vehicleSize".tr,
-                                      value: request.carSize,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: _buildInfoCard(
-                                      icon: Icons.calendar_today,
-                                      title: "requestDate".tr,
-                                      value: dateFormat.format(request.time),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                             const SizedBox(height: 4,),
-                              (request.status=='accepted')?
-                                  Center(
-                                    child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: buttonColor,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          elevation: 4, // إضافة ظل للزر
+                                const SizedBox(height: 4,),
+                                (request.status=='accepted')?
+                                Center(
+                                  child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: buttonColor,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
                                         ),
-                                        onPressed: (){
-                                          Get.to(OffersPage());
-                                        }, child: Text(
-                                      "viewProviderOffer".tr,style:TextStyle(color:textColorLight),
-                                    )),
-                                  ):const SizedBox(),
-                              const SizedBox(height: 4,),
-                              (request.status!='done')?
-                              Center(
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                                        elevation: 4, // إضافة ظل للزر
                                       ),
-                                      elevation: 4, // إضافة ظل للزر
-                                    ),
-                                    onPressed: (){
-                                      controller.cancelRequest(request.id);
-                                    }, child: Text(
-                                  "cancelRequest".tr,style:TextStyle(color:textColorLight),
-                                )),
-                              ):const SizedBox(),
+                                      onPressed: (){
+                                        Get.to(OffersPage());
+                                      }, child: Text(
+                                    "viewProviderOffer".tr,style:TextStyle(color:textColorLight),
+                                  )),
+                                ):const SizedBox(),
+                                const SizedBox(height: 4,),
+                                (request.status!='done')?
+                                Center(
+                                  child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        elevation: 4, // إضافة ظل للزر
+                                      ),
+                                      onPressed: (){
+                                        controller.cancelRequest(request.id);
+                                      }, child: Text(
+                                    "cancelRequest".tr,style:TextStyle(color:textColorLight),
+                                  )),
+                                ):const SizedBox(),
 
 
 
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              );
+                      );
+                    },
+                  ),
+                );
+              }
+
+
             },
           ),
       floatingActionButton: FloatingActionButton(
@@ -324,6 +330,7 @@ class _RequestsViewState extends State<RequestsView> {
                     entry.value,
                     style: const TextStyle(
                       fontSize: 14,
+                      color:Colors.black
                     ),
                   ),
                 ),

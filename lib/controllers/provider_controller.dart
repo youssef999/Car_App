@@ -389,7 +389,7 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
       await _firestore.collection('requests').doc(requestId).update({
         'servicePricing': price,
         'hiddenByProvider': true,
-        'status':"accepted"
+       // 'status':"accepted"
       });
 
       await loadRequests(); // Refresh the list

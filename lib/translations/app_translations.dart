@@ -5,6 +5,22 @@ class AppTranslations extends Translations {
   Map<String, Map<String, String>> get keys => {
         'en': {
 
+  "may be operation start": "May be operation started",
+  "provider should be here": "Provider should be here",
+  "Call": "Call",
+  "Message": "Message",
+  "Task Success": "Is Task Success ?",
+  "Cancel": "Cancel",
+
+          'provider_on_way': 'Provider is on the way',
+          'please_wait_provider': 'Please wait for the provider',
+          'km_away': 'km away',
+          'minutes_estimated': 'minutes estimated',
+
+ "Provider Reviews": "Provider Reviews",
+  "provider_reviews": "Provider Reviews",
+  "no_reviews_yet": "No reviews yet.",
+
           "Please enter the following data:":"Please enter the following data:",
           "VIEW REVIEWS":"VIEW REVIEWS",
 "cancelOrder":"Cancel Order",
@@ -21,7 +37,6 @@ class AppTranslations extends Translations {
           "vehicleStatus":"Vehicle Status",
           "Request cancelled successfully":"Request cancelled successfully",
 
-            
           "Submit":"Submit",
           "No requests found":"No requests found",
           "Requests":"Requests",
@@ -193,6 +208,18 @@ class AppTranslations extends Translations {
         },
         'ar': {
 
+  "may be operation start": "مفترض ان تكون المهمة بدات ",
+  "provider should be here": "متوقع وجود مقدم الخدمة بموقعك",
+  "Call": "اتصال",
+  "Message": "رسالة",
+  "Task Success": "؟ هل تمت المهمة بنجاح ",
+  "Cancel": "إلغاء",
+          'provider_on_way': 'مقدم الخدمة في الطريق',
+          'please_wait_provider': 'يرجى الانتظار لوصول مقدم الخدمة',
+          'km_away': 'كم بعيد',
+          'minutes_estimated': 'دقيقة تقريباً',
+          "provider_reviews": "تقييمات المزود",
+          "no_reviews_yet": "لا توجد تقييمات بعد",
           "Please enter the following data:":"الرجاء ادخال البيانات التالية:",
           "VIEW REVIEWS":"عرض التقييمات",
           "Request cancelled successfully":"تم حذف طلبك بنجاح ",
@@ -385,7 +412,8 @@ class AppTranslations extends Translations {
           "english": "الإنجليزية",
           "arabic": "العربية",
           "viewProviderOffer":"عرض العروض المقدمة",
-          "vehicleStatus":"سبب الطلب "
+          "vehicleStatus":"سبب الطلب ",
+          "Provider Reviews": "تقييمات المزود",
 
 
         },
@@ -426,6 +454,8 @@ class AppTranslations extends Translations {
           'enter_amount': 'رقم درج کریں',
           'valid_price_error': 'صفر سے زیادہ درست قیمت درج کریں',
           'more': 'مزید',
+
+
         },
       };
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../models/provider_offer_model.dart';
+import 'main_user_page.dart';
 
 class OffersPage extends StatelessWidget {
   final ClientController _controller = Get.find<ClientController>();
@@ -328,8 +329,17 @@ return Obx(() {
                       icon: Icons.check,
                       text: 'Accept'.tr,
                       color: Colors.green.shade600,
-                      onPressed: () =>
-                          _controller.changeOfferStatus(offer, 'Started'),
+                      onPressed: () {
+                        _controller.changeOfferStatus(offer, 'Started');
+
+   Future.delayed(const Duration(seconds: 1), () {
+     Get.offAll(MainUserPage(index: 0,));
+   });
+
+
+
+    }
+
                     ),
                   ),
                   const SizedBox(width: 8),
