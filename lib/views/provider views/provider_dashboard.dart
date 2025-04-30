@@ -1,6 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors
 
 import 'package:first_project/controllers/provider_controller.dart';
+import 'package:first_project/helper/custom_appbar.dart';
 import 'package:first_project/views/provider%20views/widgets/dashboard_content.dart';
 import 'package:first_project/views/provider%20views/widgets/notifications.dart';
 import 'package:first_project/views/provider%20views/widgets/providers_orders.dart';
@@ -17,61 +18,64 @@ class ProviderDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('provider_dashboard'.tr),
-        centerTitle: true,
-        actions: [
-          Row(
-            children: [
-              // Text(_controller.isAvailable ? "status_available".tr : "status_busy".tr),
-              GetBuilder<ProviderController>(builder: (_) {
-                return Switch(
-                  value: _controller.isAvailable,
-                  onChanged: (value) => _controller.toggleAvailability(),
-                  activeColor: _controller.toogleColor,
-                  //Colors.green,
-                  inactiveThumbColor: Colors.red,
-                );
-              }),
-            ],
-          ),
+      appBar:
 
-          // IconButton(
-          //   icon: Obx(() => Icon(
-          //     _controller.isAvailable ? Icons.work : Icons.pause_circle_filled, // Work icon for available, Pause icon for busy
-          //     color: _controller.isAvailable ? Colors.green : Colors.red, // Green for available, Red for busy
-          //   )),
-          //   onPressed: _controller.toggleAvailability,
-          // ),
-          // IconButton(
-          //   icon: Obx(() => Icon(
-          //         _controller.isAvailable ? Icons.check_circle : Icons.block,
-          //       )),
-          //   onPressed: _controller.toggleAvailability,
-          // ),
-          const SizedBox(
-            width: 20,
-          ),
-          // DropdownButton<String>(
-          //   iconEnabledColor: Colors.white,
-          //   dropdownColor: const Color.fromARGB(255, 172, 62, 54),
-          //   iconDisabledColor: const Color.fromARGB(255, 180, 132, 129),
-          //   value: _controller.selectedLanguage.value,
-          //   onChanged: (String? newValue) {
-          //     _controller.changeLanguage(newValue!);
-          //   },
-          //   items: <String>['en', 'ar', 'ur']
-          //       .map<DropdownMenuItem<String>>(
-          //         (String value) => DropdownMenuItem(
-          //           value: value,
-          //           child: Text(value.tr),
-          //         ),
-          //       )
-          //       .toList(),
-          //   style: const TextStyle(color: Colors.white),
-          // ),
-        ],
-      ),
+      CustomAppBar(title: 'provider_dashboard'.tr,),
+      // AppBar(
+      //   title: Text('provider_dashboard'.tr),
+      //   centerTitle: true,
+      //   actions: [
+      //     Row(
+      //       children: [
+      //         // Text(_controller.isAvailable ? "status_available".tr : "status_busy".tr),
+      //         GetBuilder<ProviderController>(builder: (_) {
+      //           return Switch(
+      //             value: _controller.isAvailable,
+      //             onChanged: (value) => _controller.toggleAvailability(),
+      //             activeColor: _controller.toogleColor,
+      //             //Colors.green,
+      //             inactiveThumbColor: Colors.red,
+      //           );
+      //         }),
+      //       ],
+      //     ),
+      //
+      //     // IconButton(
+      //     //   icon: Obx(() => Icon(
+      //     //     _controller.isAvailable ? Icons.work : Icons.pause_circle_filled, // Work icon for available, Pause icon for busy
+      //     //     color: _controller.isAvailable ? Colors.green : Colors.red, // Green for available, Red for busy
+      //     //   )),
+      //     //   onPressed: _controller.toggleAvailability,
+      //     // ),
+      //     // IconButton(
+      //     //   icon: Obx(() => Icon(
+      //     //         _controller.isAvailable ? Icons.check_circle : Icons.block,
+      //     //       )),
+      //     //   onPressed: _controller.toggleAvailability,
+      //     // ),
+      //     const SizedBox(
+      //       width: 20,
+      //     ),
+      //     // DropdownButton<String>(
+      //     //   iconEnabledColor: Colors.white,
+      //     //   dropdownColor: const Color.fromARGB(255, 172, 62, 54),
+      //     //   iconDisabledColor: const Color.fromARGB(255, 180, 132, 129),
+      //     //   value: _controller.selectedLanguage.value,
+      //     //   onChanged: (String? newValue) {
+      //     //     _controller.changeLanguage(newValue!);
+      //     //   },
+      //     //   items: <String>['en', 'ar', 'ur']
+      //     //       .map<DropdownMenuItem<String>>(
+      //     //         (String value) => DropdownMenuItem(
+      //     //           value: value,
+      //     //           child: Text(value.tr),
+      //     //         ),
+      //     //       )
+      //     //       .toList(),
+      //     //   style: const TextStyle(color: Colors.white),
+      //     // ),
+      //   ],
+      // ),
       body: Obx(() {
         if (_selectedIndex.value == 0) {
           return DashboardContent(); // Show the dashboard content

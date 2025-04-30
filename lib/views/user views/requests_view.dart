@@ -247,7 +247,26 @@ class _RequestsViewState extends State<RequestsView> {
                                   )),
                                 ):const SizedBox(),
                                 const SizedBox(height: 4,),
-                                (request.status!='done')?
+                                ( request.status=='pending'||request.status=='Pending')?
+                                Center(
+                                  child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:buttonColor,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        elevation: 4, // إضافة ظل للزر
+                                      ),
+                                      onPressed: (){
+                                        Get.to(OffersPage());
+
+                                      }, child: Text(
+                                    "view offers".tr,style:TextStyle(color:textColorLight),
+                                  )),
+                                ):SizedBox(),
+
+
+                                (request.status!='done'&&request.status!='Done')?
                                 Center(
                                   child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(

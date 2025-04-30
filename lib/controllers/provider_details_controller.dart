@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
+import '../helper/appMessage.dart';
 import '../main.dart';
 import '../views/user views/main_user_page.dart';
 
@@ -42,17 +43,22 @@ class ProviderDetailsController extends GetxController{
     );
     // Simulate a network request
     Future.delayed(const Duration(seconds: 2), () {
-      Get.off(MainUserPage());
+      Get.offAll(MainUserPage());
+      //Get.back();
       isSubmitting.value = false;
-      Get.snackbar(
-        'Success'.tr,
-        'Request submitted successfully'.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+
+      appMessage(text:   'Request submitted successfully'.tr, context: Get.context!,
       );
+
+
     });
     triggerNotification('طلب جديد ');
+
+   List providerIdList=box.read('providerReqId')??[];
+
+    providerIdList.add(provider.id);
+
+    box.write('providerReqId', providerIdList);
   }
 
 

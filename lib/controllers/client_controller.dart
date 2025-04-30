@@ -8,10 +8,13 @@ import 'package:first_project/main.dart';
 import 'package:first_project/views/user%20views/main_user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:first_project/models/provider_offer_model.dart';
 import 'package:get/get.dart';
+
+import '../helper/appMessage.dart';
 
 class ClientController extends GetxController {
 
@@ -27,11 +30,11 @@ class ClientController extends GetxController {
     currentIndex.value = index;
   }
 
-  @override
-  void onInit() {
-    fetchOffers();
-    super.onInit();
-  }
+  // @override
+  // void onInit() {
+  //
+  //   super.onInit();
+  // }
 
   var offers = <ProviderOfferModel>[].obs;
 
@@ -139,7 +142,9 @@ Get.back();
   //   'status': 'Rejected'
   // });
 
-  Get.snackbar('Success', 'Thank you for your feedback!');
+
+
+  appMessage(text: 'Thank you for your feedback!'.tr, context: Get.context!);
 }
 
 
@@ -174,10 +179,15 @@ Future<void> updateOffersByRequestId({
     await batch.commit();
     
     print('Successfully updated ${querySnapshot.size + 1} offers');
-    Get.snackbar('Success', 'Offers updated successfully'); // Show success message
+  ///  Get.snackbar('Success', 'Offers updated successfully'); // Show success message
+
+    appMessage(text: 'Offers updated successfully'.tr, context: Get.context!);
+
   } catch (e) {
     print('Error updating offers: $e');
-    Get.snackbar('Error', 'Failed to update offers: ${e.toString()}'); // Show error message
+  //  Get.snackbar('Error', 'Failed to update offers: ${e.toString()}'); // Show error message
+
+    appMessage(text: 'Failed to update offers: ${e.toString()}', context: Get.context!,success: false);
     rethrow;
   }
 }
@@ -194,6 +204,8 @@ Future<void> updateOffersByRequestId({
          // '//completedAt': FieldValue.serverTimestamp(),
         });
     print('Offer $offerId marked as Done');
+
+    fetchOffers();
     // Optional: Show success message
     // Get.snackbar('Success', 'Offer completed successfully');
   } catch (e) {
@@ -220,6 +232,7 @@ Future<void> updateOffersByRequestId({
       offers.value = querySnapshot.docs
           .map((doc) => ProviderOfferModel.fromSnapshot(doc))
           .toList();
+      update();
     } catch (e) {
       Get.snackbar('Error', 'Failed to fetch offers: $e');
       print("EEEE===$e");
@@ -258,7 +271,9 @@ Future<void> fetchDoneOffers() async {
       await _firestore.collection('offers').doc(offer.id).update({
         'status': status,
       });
-      Get.snackbar('Success', 'Offer $status');
+
+
+      appMessage(text: 'Offer $status', context: Get.context!);
 
       fetchOffers();
     } catch (e) {
@@ -278,7 +293,9 @@ Future<void> fetchDoneOffers() async {
         "price": (newPrice),
         'status': 'Negotiated',
       });
-      Get.snackbar('Success'.tr, "${'Price updated to'.tr}$newPrice" );
+      //Get.snackbar('Success'.tr, "${'Price updated to'.tr}$newPrice" );
+
+      appMessage(text: "${'Price updated to'.tr}$newPrice", context: Get.context!);
       // NotificationService.sendNotification
       //   (token!, 'تفاوض','تم ارسال طلب تفاوض ');
       triggerNotification('تم ارسال طلب تفاوض');
@@ -321,6 +338,7 @@ Future<void> fetchDoneOffers() async {
   Future<void> changeOfferStatus(
       ProviderOfferModel offer, String status) async {
 
+
     //String? token = await FirebaseMessaging.instance.getToken();
     try {
       // Update the offer status to 'accepted'
@@ -335,6 +353,13 @@ Future<void> fetchDoneOffers() async {
           'status': 'accepted',
           // 'acceptedAt': FieldValue.serverTimestamp(),
         });
+        final box=GetStorage();
+
+        List providerReqId = box.read('providerReqId')??[];
+
+        providerReqId.remove(offer.providerId);
+        box.write('providerReqId', []);
+
       }
 
       if(status=='Rejected'){
@@ -342,6 +367,14 @@ Future<void> fetchDoneOffers() async {
           'status': 'rejected',
           // 'acceptedAt': FieldValue.serverTimestamp(),
         });
+        final box=GetStorage();
+
+        List providerReqId = box.read('providerReqId')??[];
+
+        providerReqId.remove(offer.providerId);
+
+        box.write('providerReqId', providerReqId);
+
       }
 
       fetchOffers();
@@ -358,6 +391,7 @@ Future<void> fetchDoneOffers() async {
             offer.placeOfLoading, // Add loading location if available
         'destination': offer.destination, // Add destination if available
       });
+
       // Send a push notification to the provider
       final providerDoc =
           await _firestore.collection('providers').doc(offer.providerId).get();
@@ -368,10 +402,8 @@ Future<void> fetchDoneOffers() async {
 
       if (status == 'Accepted') {
 
-        Get.snackbar('Success'.tr, 'Offer accepted and provider notified'.tr,
-        colorText:Colors.white,
-        backgroundColor:Colors.green,
-        );
+
+        appMessage(text: 'Offer accepted and provider notified'.tr, context: Get.context!);
         triggerNotification('تمت الموافقة علي عرضك من قبل العميل ');
         //
         // NotificationService.sendNotification(token.toString()
@@ -379,10 +411,8 @@ Future<void> fetchDoneOffers() async {
       } 
       //Started
         if (status == 'Started') {
-        Get.snackbar('Success'.tr, 'Offer accepted and provider notified'.tr,
-        colorText:Colors.white,
-        backgroundColor:Colors.green,
-        );
+
+        appMessage(text: 'Offer accepted and provider notified'.tr, context: Get.context!);
         triggerNotification('تمت الموافقة علي عرضك من قبل العميل ');
         //
         // NotificationService.sendNotification(token.toString()
@@ -390,7 +420,8 @@ Future<void> fetchDoneOffers() async {
       } 
       
       else {
-        Get.snackbar('Success'.tr, 'Offer rejected and provider notified'.tr);
+
+        appMessage(text:  'Offer rejected and provider notified'.tr, context: Get.context!);
       }
 
     } catch (e) {

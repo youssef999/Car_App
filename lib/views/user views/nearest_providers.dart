@@ -3,11 +3,13 @@ import 'package:first_project/helper/custom_appbar.dart';
 import 'package:first_project/helper/custom_button.dart';
 import 'package:first_project/models/provider_model.dart';
 import 'package:first_project/values/colors.dart';
+import 'package:first_project/views/user%20views/offers_page.dart';
 import 'package:first_project/views/user%20views/provider_detailed_bottomSheet.dart';
 import 'package:first_project/views/user%20views/provider_detailed_page.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -108,7 +110,7 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
           ),
         ),
         controller.check == false ? buildProvidersList() : buildEstimatedTimeAndKm(
-          controller.selectedProvider!
+          controller.selectedProvider!,''
         ),
         const SizedBox(height: 20),
       ],
@@ -116,13 +118,20 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
   }
 
   Widget buildProvidersList() {
+    final box = GetStorage();
+    List providerReqId = box.read('providerReqId') ?? [];
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: controller.providers.length,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       itemBuilder: (context, index) {
+
         final provider = controller.providers[index];
+        final isRequestSent = providerReqId.contains(provider.id);
+        final isHaveOffer = controller.providerIds.contains(provider.id);
+
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
@@ -192,8 +201,7 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.directions_car_filled_outlined,
-                        size: 16, color: Colors.black87),
+                    const Icon(Icons.directions_car_filled_outlined, size: 16, color: Colors.black87),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
@@ -210,11 +218,103 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
+                if (isHaveOffer)
+                  Column(
+                    children: [
+                      Container(
+                      //  width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.green, width: 1.2),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.local_offer_outlined, color: Colors.green, size: 20),
+                            const SizedBox(width: 8),
+                            SizedBox(
+                              width: 164,
+                              child: Text(
+                                maxLines: 4,
+                                "You have an offer from this provider".tr,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 9,),
+                          ],
+                        ),
+                      ),
+                    const  SizedBox(height: 8,),
+                      CustomButton(
+
+                          text: 'view offers'.tr, onPressed: (){
+
+                            Get.to(OffersPage());
+
+                      }),
+                      const  SizedBox(height: 8,),
+                      CustomButton(
+                          width: 200,
+                          color:Colors.red,
+                          text: 'Cancel'.tr, onPressed: (){
+                        controller.cancelRequestToProvider(provider.id);
+
+                      }),
+                    ],
+                  )
+                else if (isRequestSent)
+                  Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.green, width: 1.5),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.check_circle_outline, color: Colors.green, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                "request sent to this provider".tr,
+                                style: const TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const  SizedBox(height: 8,),
+                      CustomButton(
+                        width: 200,
+                          color:Colors.red,
+                          text: 'Cancel'.tr, onPressed: (){
+                        controller.cancelRequestToProvider(provider.id);
+
+                      }),
+                    ],
+                  ),
               ],
             ),
             trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.black54),
             onTap: () {
-              Get.to(() => ProviderDetailsPage(provider: provider));
+              if (isRequestSent) {
+                Get.snackbar('request sent to this provider'.tr, 'You have already sent a request to this provider.'.tr);
+              } else {
+                Get.to(() => ProviderDetailsPage(provider: provider));
+              }
             },
           ),
         );
@@ -222,7 +322,9 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
     );
   }
 
-  Widget buildEstimatedTimeAndKm(Provider provider) {
+
+
+  Widget buildEstimatedTimeAndKm(Provider provider,String price) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 22),
       padding: const EdgeInsets.all(12),
@@ -280,14 +382,14 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
 
           // Existing Content
           (controller.estimatedTime > 0 && controller.isCheckStart==false)
-              ? buildOnWayContent(provider)
-              : buildWaitingContent(provider),
+              ? buildOnWayContent(provider,price)
+              : buildWaitingContent(provider,price),
         ],
       ),
     );
   }
 
-  Widget buildOnWayContent(Provider provider) {
+  Widget buildOnWayContent(Provider provider,String price) {
     return Container(
 
       decoration:BoxDecoration(
@@ -318,13 +420,13 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          buildDistanceTimeActions(provider),
+          buildDistanceTimeActions(provider,price),
         ],
       ),
     );
   }
 
-  Widget buildWaitingContent(Provider provider) {
+  Widget buildWaitingContent(Provider provider,String price) {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
@@ -355,13 +457,13 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          buildActionButtons(provider, isSuccessButton: true),
+          buildActionButtons(provider, isSuccessButton: true,price: price),
         ],
       ),
     );
   }
 
-  Widget buildDistanceTimeActions(Provider provider) {
+  Widget buildDistanceTimeActions(Provider provider,String price) {
     return Column(
       children: [
         Row(
@@ -398,12 +500,12 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
           ],
         ),
         const SizedBox(height: 16),
-        buildActionButtons(provider, isSuccessButton: false),
+        buildActionButtons(provider, isSuccessButton: false,price:price ),
       ],
     );
   }
 
-  Widget buildActionButtons(Provider provider, {required bool isSuccessButton}) {
+  Widget buildActionButtons(Provider provider, {required bool isSuccessButton,required String price}) {
     return Column(
       children: [
         Row(
@@ -458,6 +560,9 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
              if (isSuccessButton==true) {
                controller.getOfferId(controller.requestId,provider.id);
            //    controller.rateProvider(provider.id, re, offerId);
+             }
+             else{
+               controller.cancelRequestToProvider(provider.id);
              }
               //rateProvider
               // Handle cancel or success

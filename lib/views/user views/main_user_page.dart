@@ -9,28 +9,32 @@ import 'package:get/get.dart';
 import 'offers_page.dart'; // New page for offers
 
 class MainUserPage extends StatelessWidget {
+  final int index;
 
-  int index=0;
-
-  MainUserPage({ this.index=0});
-
+  MainUserPage({this.index = 0, Key? key}) : super(key: key);
 
   final ClientController clientController =
-      Get.put(ClientController(), permanent: true);
+  Get.put(ClientController());
 
   @override
   Widget build(BuildContext context) {
+    // Set the index only the first time build is called (not on every rebuild)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (clientController.currentIndex.value != index) {
+        clientController.changePage(index);
+      }
+    });
+
     return Scaffold(
-      backgroundColor:primary,
+      backgroundColor: primary,
       body: Obx(() {
-        // Display the selected page based on the current index
         switch (clientController.currentIndex.value) {
           case 0:
             return NearestProvidersPage();
           case 1:
-            return const RequestsView();
-          case 2:
             return OffersPage();
+          case 2:
+            return const RequestsView();
           case 3:
             return SettingsPage();
           default:
@@ -40,12 +44,11 @@ class MainUserPage extends StatelessWidget {
       bottomNavigationBar: Obx(() {
         return BottomNavigationBar(
           backgroundColor: primary,
-          selectedLabelStyle:const TextStyle(color: Colors.white),
-          unselectedItemColor:(Colors.white),
-          unselectedLabelStyle: const TextStyle(color:Colors.black),
-          selectedItemColor:Colors.white,
+          selectedLabelStyle: const TextStyle(color: Colors.white),
+          unselectedItemColor: Colors.white,
+          unselectedLabelStyle: const TextStyle(color: Colors.black),
+          selectedItemColor: Colors.white,
           showSelectedLabels: true,
-
           currentIndex: clientController.currentIndex.value,
           onTap: (index) {
             clientController.changePage(index);
@@ -53,19 +56,23 @@ class MainUserPage extends StatelessWidget {
           items: [
             BottomNavigationBarItem(
               icon: const Icon(Icons.dashboard),
-              label: 'Dashboard'.tr,backgroundColor: primary,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.request_page_outlined),
-              label: 'Requests'.tr,backgroundColor:primary,
+              label: 'Dashboard'.tr,
+              backgroundColor: primary,
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.local_offer_outlined),
-              label: 'Offers'.tr,backgroundColor: primary
+              label: 'Offers'.tr,
+              backgroundColor: primary,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.settings_outlined),backgroundColor:primary,
+              icon: const Icon(Icons.request_page_outlined),
+              label: 'Requests'.tr,
+              backgroundColor: primary,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.settings_outlined),
               label: 'settings'.tr,
+              backgroundColor: primary,
             ),
           ],
         );
@@ -73,3 +80,4 @@ class MainUserPage extends StatelessWidget {
     );
   }
 }
+

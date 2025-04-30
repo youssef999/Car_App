@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
-class ProviderDetailsPage extends StatelessWidget {
-  final Provider provider;
+ class ProviderDetailsPage extends StatelessWidget {
 
+  final Provider provider;
   ProviderDetailsPage({required this.provider});
 
 

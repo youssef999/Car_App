@@ -1,6 +1,7 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:first_project/helper/appMessage.dart';
 import 'package:first_project/models/client_request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -67,23 +68,19 @@ class RequestsController extends GetxController{
       print('Successfully deleted request: $requestId');
       getUserRequests();
       // Optional: Show success message to user
-      Get.snackbar(
-        'Success'.tr,
-        'Request cancelled successfully'.tr,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+
+
+      appMessage(text:  'Request cancelled successfully'.tr , context: Get.context!,
+
       );
 
 
     } catch (e) {
       print('Error cancelling request: $e');
 
-      // Show error message to user
-      Get.snackbar(
-        'Error'.tr,
-        'Failed to cancel request: ${e.toString()}'.tr,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+
+      appMessage(text:   'Failed to cancel request: ${e.toString()}'.tr, context: Get.context!,
+success: false
       );
 
       // Re-throw the error if you want calling code to handle it

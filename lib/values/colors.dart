@@ -10,3 +10,6 @@ Color appBarColor2=const Color(0xFFb4036b);
 Color buttonColor=Colors.purple;
 Color textColorLight=Colors.white;
 Color textColorDark=Colors.black;
+
+
+String currency='ريال سعودي ';

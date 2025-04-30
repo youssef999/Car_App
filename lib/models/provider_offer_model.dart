@@ -5,6 +5,7 @@ class ProviderOfferModel {
   final String providerId;
   final String userId;
   final String providerName;
+  final String providerImage;
   final String requestId;
   
   final double distance;
@@ -21,6 +22,7 @@ class ProviderOfferModel {
     required this.userId,
     required this.requestId,
     required this.providerName,
+    required this.providerImage,
     required this.distance,
     required this.price,
     required this.timeOfOffer,
@@ -38,6 +40,7 @@ class ProviderOfferModel {
       providerId: data['providerId'] ?? '1',
       requestId: data['requestId'] ?? '1',
       userId: data['userId']??"1",
+      providerImage: data['image']??'',
       providerName: data['providerName']??"",
       distance: data['distance'].toDouble()??90,
       price: data['price']??'90',
@@ -62,6 +65,7 @@ class ProviderOfferModel {
       timeOfOffer: (json['timeOfOffer']??Timestamp.now()), // Parse ISO 8601 string
       status: json['status']??"",
       carSize: json['carSize']??'',
+      providerImage: json['image'],
       placeOfLoading: json['placeOfLoading']??"",
       destination: json['destination']??"",
     );

@@ -2,13 +2,17 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:first_project/main.dart';
 import 'package:first_project/models/provider_model.dart';
+import 'package:first_project/views/done/done_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../helper/appMessage.dart';
 
 class NearProviderController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -59,9 +63,11 @@ class NearProviderController extends GetxController {
   @override
   void onInit() {
     getCurrentLocation();
+    getProvidersIdFromOffers();
     // TODO: implement onInit
     super.onInit();
   }
+
   @override
   void onClose() {
     countdownTimer?.cancel();
@@ -93,6 +99,107 @@ class NearProviderController extends GetxController {
   //     check = false;  // Set to false in case of error
   //   }
   // }
+
+
+
+  List<String> providerIds = [];
+
+  Future<void> getProvidersIdFromOffers() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('offers')
+          .where('status', isEqualTo: 'Pending')
+          .where('userId', isEqualTo: "1")
+          .get();
+
+      providerIds = querySnapshot.docs
+          .map((doc) => doc['providerId'].toString())
+          .toSet()
+          .toList(); // .toSet() to remove duplicates
+
+      print("Accepted providerIds: $providerIds");
+      update();
+    } catch (e) {
+      print("Error fetching offers: $e");
+    }
+  }
+
+
+  String requestId = '';
+
+  Future<void> cancelRequestToProvider(String providerId) async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      // Step 1: Find the request
+      final querySnapshot = await firestore
+          .collection('requests')
+          .where('providerId', isEqualTo: providerId)
+          .where('userId', isEqualTo: '1') // Replace with actual userId if dynamic
+          .where('status', isEqualTo: 'pending')
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+
+        Get.snackbar('Error'.tr, 'No pending request found'.tr);
+        return;
+      }
+
+      final doc = querySnapshot.docs.first;
+      requestId = doc['id'];
+
+      // Step 2: Delete request document
+      await doc.reference.delete();
+
+      // Step 3: Delete related offer
+      await deleteOfferByRequestId(requestId);
+
+      // Step 4: Update local storage
+      List providerIds = box.read('providerReqId') ?? [];
+      providerIds.remove(providerId);
+      box.write('providerReqId', providerIds);
+
+
+      appMessage(text: 'Request Deleted Successfully'.tr, context: Get.context!);
+
+
+
+      getCurrentLocation();
+      getProvidersIdFromOffers();
+
+      print('Request and offer successfully cancelled.');
+    } catch (e) {
+      print('Error cancelling request: $e');
+      Get.snackbar('Error'.tr, 'Failed to cancel the request'.tr);
+
+
+    }
+  }
+
+  Future<void> deleteOfferByRequestId(String requestId) async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      final offerSnapshot = await firestore
+          .collection('offers')
+          .where('requestId', isEqualTo: requestId)
+          .get();
+
+      for (var doc in offerSnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      print('Offers deleted for requestId: $requestId');
+
+      triggerNotification('  تم الغا المهمة من قبل المستخدم  ');
+
+    } catch (e) {
+      print('Error deleting offers: $e');
+    }
+
+  }
+
+
 
 
   double lat=0;
@@ -142,7 +249,7 @@ class NearProviderController extends GetxController {
   Provider ? selectedProvider;
 
 
-  String requestId='';
+ // String requestId='';
   Future<void> checkForOrder(double userLat, double userLng) async {
     try {
       // Step 1: Query the 'requests' collection
@@ -202,9 +309,9 @@ class NearProviderController extends GetxController {
           .limit(1)
           .get();
 
-      //check = querySnapshot.docs.isNotEmpty;
+      check = querySnapshot.docs.isNotEmpty;
 
-     // print('User has pending requests: $check');
+     print('User has pending requests: $check');
 
      // if (check) {
         // Step 2: Get providerId and requestId from the request
@@ -250,6 +357,7 @@ class NearProviderController extends GetxController {
 
   Future<String> getOfferId(String requestId, String providerId) async {
     String offerId = '';
+    String price = '';
 
     try {
       final querySnapshot = await FirebaseFirestore.instance
@@ -261,7 +369,8 @@ class NearProviderController extends GetxController {
 
       if (querySnapshot.docs.isNotEmpty) {
         offerId = querySnapshot.docs.first.id;
-        rateProvider(providerId,requestId,offerId);
+        price= querySnapshot.docs.first['price'].toString();
+        rateProvider(providerId,requestId,offerId,price);
       }
     } catch (e) {
       print('Error getting offerId: $e');
@@ -271,7 +380,7 @@ class NearProviderController extends GetxController {
   }
 
 
-  Future<void> rateProvider(String providerId,String requestId,String offerId) async {
+  Future<void> rateProvider(String providerId,String requestId,String offerId,String price) async {
 
     final firestore = FirebaseFirestore.instance;
     TextEditingController commentController = TextEditingController();
@@ -374,7 +483,12 @@ class NearProviderController extends GetxController {
     //   'status': 'Rejected'
     // });
 
-    Get.snackbar('Success', 'Thank you for your feedback!');
+
+
+    appMessage(text: 'Thank you for your feedback!'.tr, context: Get.context!);
+
+
+    Get.offAll(DoneView(price:price));
   }
 
   Future<void> markOfferAsDone(String offerId) async {
@@ -389,8 +503,7 @@ class NearProviderController extends GetxController {
         // '//completedAt': FieldValue.serverTimestamp(),
       });
       print('Offer $offerId marked as Done');
-      // Optional: Show success message
-      // Get.snackbar('Success', 'Offer completed successfully');
+
     } catch (e) {
       print('Error marking offer as Done: $e');
       // Optional: Show error message
@@ -512,50 +625,52 @@ class NearProviderController extends GetxController {
   }
 
 
-  Future<void> cancelOrder() async {
-    try {
-      // Get pending requests for the user
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('requests')
-          .where('userId', isEqualTo: '1')
-          .where('status', isEqualTo: 'pending')
-          .limit(1)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        // Get the first document ID (request ID)
-        final requestId = querySnapshot.docs.first.id;
-
-        // Delete the request document
-        await FirebaseFirestore.instance
-            .collection('requests')
-            .doc(requestId)
-            .delete();
-
-        print('Successfully deleted request: $requestId');
-        check = false; // Update status since request was deleted
-      } else {
-        print('No pending requests found to cancel');
-        check = false;
-      }
-
-      update(); // Notify listeners
-    } catch (e) {
-      print('Error cancelling order: $e');
-      check = false; // Set to false in case of error
-      update();
-      // Consider showing an error message to the user
-      // Get.snackbar('Error', 'Failed to cancel order: ${e.toString()}');
-    }
-  }
+  // Future<void> cancelOrder() async {
+  //   try {
+  //     // Get pending requests for the user
+  //     final querySnapshot = await FirebaseFirestore.instance
+  //         .collection('requests')
+  //         .where('userId', isEqualTo: '1')
+  //         .where('status', isEqualTo: 'pending')
+  //         .limit(1)
+  //         .get();
+  //     if (querySnapshot.docs.isNotEmpty) {
+  //       // Get the first document ID (request ID)
+  //       final requestId = querySnapshot.docs.first.id;
+  //
+  //       // Delete the request document
+  //       await FirebaseFirestore.instance
+  //           .collection('requests')
+  //           .doc(requestId)
+  //           .delete();
+  //
+  //       print('Successfully deleted request: $requestId');
+  //       check = false; // Update status since request was deleted
+  //     } else {
+  //       print('No pending requests found to cancel');
+  //       check = false;
+  //     }
+  //
+  //     update(); // Notify listeners
+  //   } catch (e) {
+  //     print('Error cancelling order: $e');
+  //     check = false; // Set to false in case of error
+  //     update();
+  //     // Consider showing an error message to the user
+  //     // Get.snackbar('Error', 'Failed to cancel order: ${e.toString()}');
+  //   }
+  // }
 
 
   Future<void> openWhatsAppChat(Provider provider) async {
     final String phoneNumber = provider.phone; // تأكد أن phone موجود في Provider
     final Uri whatsappUrl = Uri.parse('https://wa.me/$phoneNumber');
 
+    print(phoneNumber);
     if (await canLaunchUrl(whatsappUrl)) {
       await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
     } else {
+      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
       throw Exception('Could not open WhatsApp chat');
     }
   }
@@ -567,6 +682,7 @@ class NearProviderController extends GetxController {
     if (await canLaunchUrl(callUrl)) {
       await launchUrl(callUrl, mode: LaunchMode.externalApplication);
     } else {
+      await launchUrl(callUrl, mode: LaunchMode.externalApplication);
       throw Exception('Could not make a call');
     }
   }

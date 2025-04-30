@@ -13,7 +13,6 @@ double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
   double distance = earthRadius * c; // Distance in km
   return distance;
 }
-
 double _toRadians(double degree) {
   return degree * (pi / 180);
 }

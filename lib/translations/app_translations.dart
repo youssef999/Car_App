@@ -3,7 +3,51 @@ import 'package:get/get.dart';
 class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
-        'en': {
+        'en':
+        {
+
+          "send_offer":"Send Offer",
+          "hide":"Hide",
+
+  'aboutApp': 'About the App',
+  'about_app_header': 'Your Car, Fixed Fast',
+  'about_app_description': '''
+This app helps you submit a repair request for your car in an easy and fast way. 
+Multiple service providers will receive your request and can send you their offers within seconds.
+
+You can compare offers, choose the best one for you, and get your car fixed with confidence and convenience.
+'''
+,
+  'PrivacyPolicy': 'Privacy Policy',
+  'privacy_intro': 'Your Privacy Matters',
+  'privacy_details': '''
+We are committed to protecting your personal data and maintaining your privacy. We collect only the necessary information such as your name and phone number to help you manage your account and access services within the app.
+
+We do not share your information with third parties without your explicit consent. All data is used only for providing and improving the app's services.
+
+This application is not intended for children under the age of 13. If you are under 13, please do not use the app.
+
+You have full control over your data and can request to view, update, or delete your account information at any time.
+
+By continuing to use the app, you agree to the practices described in this Privacy Policy.
+'''
+,
+
+          "Offers updated successfully":"Offers updated successfully",
+
+          "Thank you for your feedback!":"Thank you for your feedback!",
+          'task_completed': 'Task Completed Successfully!',
+          'The provider has received the following payment:': 'The provider has received the following payment:',
+          'Return Home': 'Return Home',
+
+          "Request Deleted Successfully":"Request Deleted Successfully",
+          "simple track":"Check Estimated Time",
+          "You have already sent a request to this provider.":"You have already sent a request to this provider",
+
+          "You have an offer from this provider":"You have an offer from this provider",
+          "view offers":"View Offers",
+
+          "request sent to this provider":"request sent to this provider",
 
   "may be operation start": "May be operation started",
   "provider should be here": "Provider should be here",
@@ -22,6 +66,11 @@ class AppTranslations extends Translations {
   "no_reviews_yet": "No reviews yet.",
 
           "Please enter the following data:":"Please enter the following data:",
+
+
+          "Please enter a valid price greater than zero.":"Please enter a valid price greater than zero.",
+
+
           "VIEW REVIEWS":"VIEW REVIEWS",
 "cancelOrder":"Cancel Order",
           "cancelRequest":"Cancel Request",
@@ -208,12 +257,64 @@ class AppTranslations extends Translations {
         },
         'ar': {
 
+          "send_offer":"ارسال العرض",
+          "hide":"إخفاء",
+
+          "Please enter a valid price greater than zero.":"ادخل سعر مناسب للمهمة",
+
+  'aboutApp': 'عن التطبيق',
+  'about_app_header': 'سيارتك تُصلح بسرعة',
+  'about_app_description': '''
+يساعدك هذا التطبيق على تقديم طلب صيانة لسيارتك بطريقة سهلة وسريعة.
+يستقبل العديد من مقدمي الخدمة طلبك، ويمكنهم إرسال عروضهم خلال ثوانٍ.
+
+يمكنك مقارنة العروض، واختيار الأنسب لك، والحصول على صيانة لسيارتك بكل ثقة وسهولة.
+''',
+
+  'PrivacyPolicy': 'سياسة الخصوصية',
+  'privacy_intro': 'خصوصيتك تهمنا',
+ 'privacy_details': '''
+نحن ملتزمون بحماية بياناتك الشخصية والحفاظ على خصوصيتك. نقوم بجمع المعلومات الأساسية فقط مثل الاسم ورقم الهاتف، وذلك لمساعدتك في إدارة حسابك والوصول إلى خدمات التطبيق.
+
+لن نشارك معلوماتك مع أي طرف ثالث دون موافقتك الصريحة. يتم استخدام البيانات فقط لتقديم وتحسين خدمات التطبيق.
+
+هذا التطبيق غير مخصص للأطفال دون سن 13 عامًا. إذا كنت أقل من 13 سنة، يرجى عدم استخدام التطبيق.
+
+لديك السيطرة الكاملة على بياناتك، ويمكنك طلب عرض أو تحديث أو حذف معلومات حسابك في أي وقت.
+
+باستمرارك في استخدام التطبيق، فإنك توافق على الممارسات الموضحة في سياسة الخصوصية هذه.
+'''
+
+,
+
+
+
+  "Offers updated successfully":"تم تعديل العرض بنجاح",
+
+          'task_completed': 'تم إكمال المهمة بنجاح!',
+          'The provider has received the following payment:': 'استلم المزود المبلغ التالي:',
+          'Return Home': 'العودة إلى الصفحة الرئيسية',
+
+          "Thank you for your feedback!":"شكرا لتقييمك ",
+
+
+
+          "simple track":"تتبع حالة طلبك  ",
+
+          "You have an offer from this provider":"لديك عرض مقدم من مقدم الخدمة ",
+
+          "You have already sent a request to this provider.":" لا يمكن الطلب لمقدم الخدمة اكثر من مرة ",
+
+          "request sent to this provider":"تم ارسال الطلب الى مقدم الخدمة",
+
+
   "may be operation start": "مفترض ان تكون المهمة بدات ",
   "provider should be here": "متوقع وجود مقدم الخدمة بموقعك",
   "Call": "اتصال",
   "Message": "رسالة",
   "Task Success": "؟ هل تمت المهمة بنجاح ",
   "Cancel": "إلغاء",
+          "Request Deleted Successfully":"تم حذف الطلب بنجاح ",
           'provider_on_way': 'مقدم الخدمة في الطريق',
           'please_wait_provider': 'يرجى الانتظار لوصول مقدم الخدمة',
           'km_away': 'كم بعيد',
@@ -255,6 +356,13 @@ class AppTranslations extends Translations {
           "DoneTask":"هل تم الانتهاء من المهمة",
           "km away": "كيلومترات",
           "distance":"المسافة",
+          "Done":"تم بنجاح",
+          "done":"تم بنجاح",
+  "accepted":"تم القبول",
+          "view offers":"متابعة العروض",
+
+          "refused":"تم الرفض",
+
           "Mins": "دقائق",
           "Estimated Time":"وقت الوصول المتوقع",
           "Start Task": "بدء المهمة",

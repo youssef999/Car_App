@@ -8,6 +8,7 @@ import 'package:first_project/models/notification_model.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import '../helper/appMessage.dart';
 import '../models/provider_offer_model.dart';
 
 class ProviderController extends GetxController {
@@ -78,7 +79,10 @@ class ProviderController extends GetxController {
       await batch.commit();
 
       print('Successfully updated ${querySnapshot.size} offers');
-      Get.snackbar('Success', '${querySnapshot.size} offers updated successfully');
+      // Get.snackbar('Success', '${querySnapshot.size} offers updated successfully');
+      //
+      //
+      // appMessage(text:  'Offer rejected and provider notified'.tr, context: Get.context!);
     } catch (e) {
       print('Error updating offers: $e');
       Get.snackbar('Error', 'Failed to update offers: ${e.toString()}');
@@ -102,26 +106,28 @@ Future<void> updateOfferStatus(String status, String id,String requestId) async 
 
     print('Offer $id updated successfully with status: $status');
     if(status == 'Started'){
-   Get.snackbar(
-  'Start Task'.tr, '',
-  //'تم الموافقة ويتم بدء المهمة', '',
-    backgroundColor:Colors.green,
-    colorText:Colors.white,
-    icon:const Icon(Icons.done,color:Colors.white,),
-    );
+
+
+   appMessage(text:'Start Task'.tr, context: Get.context!);
     }
     else if(status == 'Accepted'){
-Get.snackbar('negotied offer has been accepted'.tr, '',
-    backgroundColor:Colors.green,
-    colorText:Colors.white,
-    icon:const Icon(Icons.done,color:Colors.white,),
-    );
+
+
+
+appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
+
+
+
     }else{
-      Get.snackbar('negotied offer has been refused'.tr, '',
-    backgroundColor:Colors.green,
-    colorText:Colors.white,
-    icon:const Icon(Icons.done,color:Colors.white,),
-    );
+
+
+
+      appMessage(text:'negotied offer has been refused'.tr, context: Get.context!);
+
+
+
+
+
     }
     fetchOrders();
 
@@ -330,10 +336,12 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
       await _firestore.collection('requests').doc(requestId).update({
         'status':"refused"
       });
-      Get.snackbar('Request Hidden'.tr, 'Request has been hidden'.tr,
-      colorText:Colors.white,backgroundColor:Colors.green,
-          snackPosition:SnackPosition.BOTTOM,duration:const Duration(seconds: 1)
-      );
+
+
+      appMessage(text:'Request has been hidden'.tr, context: Get.context!);
+
+
+
 
     } catch (e) {
       Get.snackbar('Error', 'Failed to hide request: $e');
@@ -349,12 +357,12 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
     print('request == ${request.toString()}');
     // Validate price
     if (price.isEmpty || double.tryParse(price) == null || double.parse(price) <= 0) {
-      Get.snackbar(
-        'Invalid Price'.tr,
-        'Please enter a valid price greater than zero.'.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
+
+      appMessage(text:'Please enter a valid price greater than zero.'.tr, context: Get.context!,
+      success: false
       );
+
+
       return;
     }
     try {
@@ -363,8 +371,10 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
       await _firestore.collection('providers').doc(providerId).get();
 
       String providerName = 'Unknown Provider';
+      String providerImage = '';
       if (providerSnapshot.exists && providerSnapshot.data() != null) {
         providerName = providerSnapshot.data()!['name'] ?? 'Unknown Provider';
+        providerImage=providerSnapshot.data()!['image'] ?? 'Unknown Provider';
       }
       // Generate a unique offer ID
       String offerId = _firestore.collection('offers').doc().id;
@@ -375,6 +385,7 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
         'servicePricing': price,
         'providerId': providerId,
         'status': 'Pending',
+        'image':providerImage,
         'userId': '1',
         'providerName': providerName, // ← dynamically fetched
         'distance': 90.3,
@@ -394,14 +405,11 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
 
       await loadRequests(); // Refresh the list
 
-      Get.snackbar(
-        'Offer Sent'.tr,
-        'Offer sent for Request'.tr,
-        colorText: Colors.white,
-        backgroundColor: Colors.green,
-        snackPosition: SnackPosition.BOTTOM,
-      );
 
+
+      appMessage(text: 'Offer sent for Request'.tr, context: Get.context!,
+
+      );
       triggerNotification('عرض جديد من $providerName');
 
     } catch (e) {
@@ -419,11 +427,9 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
     if (price.isEmpty ||
         double.tryParse(price) == null ||
         double.parse(price) <= 0) {
-      Get.snackbar(
-        'Invalid Price'.tr,
-        'Please enter a valid price greater than zero.'.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
+
+      appMessage(text: 'Please enter a valid price greater than zero.'.tr, context: Get.context!,
+success: false
       );
       return; // Exit the method if validation fails
     }
@@ -433,7 +439,10 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
         "hiddenByProvider": true
       });
       await loadRequests(); // Refresh the list
-      Get.snackbar('Offer Sent'.tr, 'Offer sent for Request'.tr);
+
+      appMessage(text: 'Offer sent for Request'.tr, context: Get.context!,
+
+      );
     } catch (e) {
       Get.snackbar('Error', 'Failed to send offer: $e');
       print("E=111==$e");
@@ -471,14 +480,9 @@ Get.snackbar('negotied offer has been accepted'.tr, '',
       toogleColor = Colors.red;
       update();
     }
-    Get.snackbar(
-      duration: const Duration(seconds: 1),
-      //  'Status Updated',
-      _isAvailable.value ? 'You are now Available'.tr : 'You are now Busy'.tr,
-      '',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: _isAvailable.value ? Colors.green : Colors.red,
-      colorText: Colors.white,
+
+
+    appMessage(text: _isAvailable.value ? 'You are now Available'.tr : 'You are now Busy'.tr, context: Get.context!,
     );
   }
 

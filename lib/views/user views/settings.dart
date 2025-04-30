@@ -1,112 +1,141 @@
+import 'package:first_project/controllers/settings_controller.dart';
+import 'package:first_project/helper/custom_appbar.dart';
+import 'package:first_project/helper/open_whats.dart';
+import 'package:first_project/values/colors.dart';
+import 'package:first_project/views/login_view.dart';
+import 'package:first_project/views/privacy/about_app.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../privacy/privacy_view.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+
+  SettingsController controller=Get.put(SettingsController());
+  @override
+  void initState() {
+
+    controller.getUserData();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('settingsTitle'.tr,
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
-                color: Theme.of(context).textTheme.titleLarge?.color)),
-        centerTitle: true,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => Get.back(),
-        ),
+      appBar: CustomAppBar(title: 'settingsTitle'.tr,
+
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Profile Section
-            _buildSectionHeader('profileSection'.tr),
-            _buildSettingCard(
-              context,
-              leading: Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Colors.amber, Colors.orange],
+
+
+
+      body: GetBuilder<SettingsController>(
+        builder: (_) {
+
+          if(controller.userData.isNotEmpty){
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  SizedBox(height: 20,),
+                  // Profile Section
+                  _buildSectionHeader('profileSection'.tr),
+                  _buildSettingCard(
+                    context,
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [Colors.amber, Colors.orange],
+                        ),
+                      ),
+                      child: const Icon(Icons.person, color: Colors.white),
+                    ),
+                    title: controller.userData[0]['name'],
+                    subtitle: controller.userData[0]['phone'],
+                    //'personalInfoSubtitle'.tr,
+                    onTap: () {},
                   ),
-                ),
-                child: const Icon(Icons.person, color: Colors.white),
+                  const SizedBox(height: 20),
+
+                  // Account Settings
+                  _buildSectionHeader('accountSettings'.tr),
+                  const SizedBox(height: 5,),
+                  _buildSettingItem(
+                    context,
+                    icon: Icons.language_rounded,
+                    title: 'language'.tr,
+                    value: 'English',
+                    onTap: () => _showLanguageDialog(context),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildSettingItem(
+                    context,
+                    icon: Icons.security_rounded,
+                    title: 'privacySecurity'.tr,
+                    onTap: () {
+                      Get.to(PrivacyView());
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // App Settings
+                  _buildSectionHeader('appSettings'.tr),
+
+                 const SizedBox(height: 5,),
+                  _buildSettingItem(
+                    context,
+                    icon: Icons.help_center_rounded,
+                    title: 'helpCenter'.tr,
+                    onTap: () {
+                      openWhatsAppChat("+201097970465");
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  _buildSettingItem(
+                    context,
+                    icon: Icons.info_rounded,
+                    title: 'aboutApp'.tr,
+                    onTap: () {
+                      Get.to(AboutApp());
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  // Actions
+                  _buildActionButton(
+                    context,
+                    text: 'logout'.tr,
+                    icon: Icons.logout_rounded,
+                    color: Colors.redAccent,
+                    onTap: () {
+                      Get.offAll(LoginPage());
+                    },
+                  ),
+                ],
               ),
-              title: 'John Doe',
-              subtitle: 'personalInfoSubtitle'.tr,
-              onTap: () {},
-            ),
-            const SizedBox(height: 20),
+            );
+          }else{
+            return Center(
+              child:CircularProgressIndicator(),
+            );
+          }
 
-            // Account Settings
-            _buildSectionHeader('accountSettings'.tr),
-            _buildSettingItem(
-              context,
-              icon: Icons.language_rounded,
-              title: 'language'.tr,
-              value: 'English',
-              onTap: () => _showLanguageDialog(context),
-            ),
-            _buildSettingItem(
-              context,
-              icon: Icons.notifications_active_rounded,
-              title: 'notifications'.tr,
-              trailing: Switch(
-                value: true,
-                onChanged: (val) {},
-                activeColor: Colors.amber,
-              ),
-            ),
-            _buildSettingItem(
-              context,
-              icon: Icons.security_rounded,
-              title: 'privacySecurity'.tr,
-              onTap: () {},
-            ),
-            const SizedBox(height: 20),
-
-            // App Settings
-            _buildSectionHeader('appSettings'.tr),
-            _buildSettingItem(
-              context,
-              icon: Icons.help_center_rounded,
-              title: 'helpCenter'.tr,
-              onTap: () {},
-            ),
-            _buildSettingItem(
-              context,
-              icon: Icons.info_rounded,
-              title: 'aboutApp'.tr,
-              onTap: () {},
-            ),
-            const SizedBox(height: 20),
-
-            // Actions
-            _buildActionButton(
-              context,
-              text: 'logout'.tr,
-              icon: Icons.logout_rounded,
-              color: Colors.redAccent,
-              onTap: () {},
-            ),
-          ],
-        ),
+        }
       ),
     );
   }
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
+    return Row(
+      children: [
+        Text(
           title,
           style: TextStyle(
             fontSize: 16,
@@ -114,7 +143,7 @@ class SettingsPage extends StatelessWidget {
             color: Colors.grey[600],
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -205,7 +234,7 @@ class SettingsPage extends StatelessWidget {
                   color: Colors.amber.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: Colors.orange, size: 20),
+                child: Icon(icon, color:primary, size: 20),
               ),
               const SizedBox(width: 16),
               Expanded(

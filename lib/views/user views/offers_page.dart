@@ -1,59 +1,79 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:first_project/controllers/client_controller.dart';
+import 'package:first_project/helper/custom_button.dart';
+import 'package:first_project/values/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../models/provider_offer_model.dart';
 import 'main_user_page.dart';
+import 'nearest_providers.dart';
 
-class OffersPage extends StatelessWidget {
-  final ClientController _controller = Get.find<ClientController>();
+class OffersPage extends StatefulWidget {
+  @override
+  State<OffersPage> createState() => _OffersPageState();
+}
 
+class _OffersPageState extends State<OffersPage> {
+   ClientController _controller =Get.put(ClientController());
+
+   @override
+  void initState() {
+
+     _controller.fetchOffers();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text(
-            'My Tasks'.tr,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-            //  color: Colors.white,
+    return GetBuilder<ClientController>(
+      builder: (_) {
+        return DefaultTabController(
+          length: 2,
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              title: Text(
+                'My Tasks'.tr,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                //  color: Colors.white,
+                ),
+              ),
+              centerTitle: true,
+              elevation: 0,
+              backgroundColor: appBarColor,
+              bottom: TabBar(
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
+                labelStyle: const TextStyle(
+                  color:Colors.white,
+                  fontWeight: FontWeight.bold),
+                tabs: [
+                  Tab(text: 'Active Tasks'.tr),
+                  Tab(text: 'Completed Tasks'.tr),
+                ],
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  onPressed: () => _controller.fetchOffers(),
+                ),
+              ],
+            ),
+            body: TabBarView(
+              children: [
+                // Active Tasks Tab
+                _buildTaskList(filterDone: false),
+
+                // Completed Tasks Tab
+                _buildTaskList(filterDone: true),
+              ],
             ),
           ),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.amber,
-          bottom: TabBar(
-            indicatorColor: Colors.white,
-            indicatorWeight: 3,
-            labelStyle: const TextStyle(
-              color:Colors.white,
-              fontWeight: FontWeight.bold),
-            tabs: [
-              Tab(text: 'Active Tasks'.tr),
-              Tab(text: 'Completed Tasks'.tr),
-            ],
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              onPressed: () => _controller.fetchOffers(),
-            ),
-          ],
-        ),
-        body: TabBarView(
-          children: [
-            // Active Tasks Tab
-            _buildTaskList(filterDone: false),
-            
-            // Completed Tasks Tab
-            _buildTaskList(filterDone: true),
-          ],
-        ),
-      ),
+        );
+      }
     );
   }
 
@@ -90,9 +110,9 @@ class OffersPage extends StatelessWidget {
 return Obx(() {
   // Check if any offer has status 'Started'
   final hasStartedOffer = _controller.offers.any((o) => o.status == 'Started');
-  
+
   List<ProviderOfferModel> offers;
-  
+
   if (filterDone) {
     // For completed tasks tab, show all done offers
     offers = _controller.offers.where((o) => o.status == 'Done').toList();
@@ -139,114 +159,102 @@ return Obx(() {
     },
   );
 });
-    
-      // return ListView.builder(
-      //   padding: const EdgeInsets.all(16),
-      //   itemCount: offers.length,
-      //   itemBuilder: (context, index) {
-      //     final offer = offers[index];
-      //     if(offer.status=='Started'){
-      //     //  return Text('xxx');
-      //      if(offer.status=='Started'){
-      //       return Padding(
-      //       padding: const EdgeInsets.only(bottom: 16),
-      //       child: _buildOfferCard(offer, showDoneButton: !filterDone),
-      //     );
-      //   }else{
-      //     return const SizedBox(height: 0);
-      //   }
-      //     //   return Padding(
-      //     //   padding: const EdgeInsets.only(bottom: 16),
-      //     //   child: _buildOfferCard(offer, showDoneButton: !filterDone),
-      //     // );
-      //   }else{
 
-  
-      //     return Padding(
-      //       padding: const EdgeInsets.only(bottom: 16),
-      //       child: _buildOfferCard(offer, showDoneButton: !filterDone),
-      //     );
-      //   }
-      //   },
-      // );
     });
   }
 
   Widget _buildOfferCard(ProviderOfferModel offer, {bool showDoneButton = true}) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Provider Header
+            /// --- Provider Header ---
             Row(
               children: [
-                SizedBox(
+                Container(
                   width: 50,
                   height: 50,
-                  // decoration: BoxDecoration(
-                  //   shape: BoxShape.circle,
-                  //   color: Colors.amber.shade100,
-                  //   image: offer.providerImage != null
-                  //       ? DecorationImage(
-                  //           image: NetworkImage(offer.providerImage!),
-                  //           fit: BoxFit.cover,
-                  //         )
-                  //       : null,
-                  // ),
-                  child: 
-                //  offer.providerId= null? 
-                  Icon(
-                          Icons.person,
-                          size: 30,
-                          color: Colors.amber.shade800,
-                        )
-                      //: null,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.amber.shade100,
+                    image: offer.providerImage != null
+                        ? DecorationImage(
+                      image: NetworkImage(offer.providerImage!),
+                      fit: BoxFit.cover,
+                    )
+                        : null,
+                  ),
+                  child: offer.providerImage == null
+                      ? Icon(Icons.person, size: 28, color: Colors.amber.shade800)
+                      : null,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      /// Provider name
                       Text(
                         offer.providerName,
                         style: const TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
                           color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.amber.shade600,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            
-                            '4.8 (24)',
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 6),
+
+                      /// Rating
+                      FutureBuilder<double>(
+                        future: _getProviderRating(offer.providerId),
+                        builder: (context, snapshot) {
+                          final rating = (snapshot.data ?? 0.0).toStringAsFixed(2);
+                          return Row(
+                            children: [
+                              //Icon(Icons.star, size: 16, color: Colors.amber.shade600),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$rating ⭐',
+                                style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ],
                   ),
                 ),
-                if (offer.status == 'Pending')
+
+                /// Date
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    DateFormat('MMM dd, yyyy - hh:mm a').format(offer.timeOfOffer.toDate()),
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade800),
+                  ),
+                ),
+
+                /// Status
+                if (offer.status == 'Pending') ...[
+                  const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.orange.shade100,
                       borderRadius: BorderRadius.circular(12),
@@ -260,22 +268,18 @@ return Obx(() {
                       ),
                     ),
                   ),
+                ],
               ],
             ),
+
             const SizedBox(height: 16),
 
-            // Task Details
+            /// --- Task Details ---
             _buildDetailRow(
               icon: Icons.work_outline,
               title: 'Service'.tr,
               value: offer.id.tr,
               color: Colors.purple.shade600,
-            ),
-            _buildDetailRow(
-              icon: Icons.location_on_outlined,
-              title: 'distance'.tr,
-              value: '${offer.distance} ${'km away'.tr}',
-              color: Colors.blue.shade600,
             ),
             _buildDetailRow(
               icon: Icons.attach_money,
@@ -285,42 +289,44 @@ return Obx(() {
             ),
             const SizedBox(height: 16),
 
-            // Status & Actions
+            /// --- Offer Actions ---
             if (offer.status == 'Started' && showDoneButton)
               Column(
                 children: [
                   _buildStatusCard(
                     icon: Icons.directions_car,
                     title: 'Provider In The Way'.tr,
-                    subtitle: '${"Estimated Time".tr}: 4${"Mins".tr}',
+                    subtitle: '',
                     color: Colors.blue.shade600,
                   ),
                   const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.check_circle_outline, size: 20),
-                      label: Text('DoneTask'.tr),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade600,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () {
-                        _controller.rateProvider(offer.providerId,
-                        offer.requestId,
-                        offer.id
-                        );
-                      }
-                      //_controller.markOfferAsDone(offer.id),
-                    ),
-                  ),
+                  CustomButton(text: 'simple track'.tr, onPressed: (){
+                    Get.to(NearestProvidersPage());
+                //   Get.off(MainUserPage(index: 0,));
+                  }),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   child: ElevatedButton.icon(
+                  //     icon: const Icon(Icons.check_circle_outline, size: 20),
+                  //     label: Text('DoneTask'.tr),
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: Colors.green.shade600,
+                  //       foregroundColor: Colors.white,
+                  //       padding: const EdgeInsets.symmetric(vertical: 14),
+                  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  //     ),
+                  //     onPressed: () {
+                  //       _controller.rateProvider(
+                  //         offer.providerId,
+                  //         offer.requestId,
+                  //         offer.id,
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
-            
+
             if (offer.status == 'Pending')
               Row(
                 children: [
@@ -331,15 +337,10 @@ return Obx(() {
                       color: Colors.green.shade600,
                       onPressed: () {
                         _controller.changeOfferStatus(offer, 'Started');
-
-   Future.delayed(const Duration(seconds: 1), () {
-     Get.offAll(MainUserPage(index: 0,));
-   });
-
-
-
-    }
-
+                        Future.delayed(const Duration(seconds: 1), () {
+                          Get.offAll(MainUserPage(index: 0));
+                        });
+                      },
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -357,39 +358,38 @@ return Obx(() {
                       icon: Icons.close,
                       text: 'Reject'.tr,
                       color: Colors.red.shade600,
-                      onPressed: () =>
-                          _controller.changeOfferStatus(offer, 'Rejected'),
+                      onPressed: () => _controller.changeOfferStatus(offer, 'Rejected'),
                     ),
                   ),
                 ],
               ),
-            
+
             if (offer.status == 'Done')
               _buildStatusCard(
                 icon: Icons.check_circle,
                 title: 'Task Completed'.tr,
-                subtitle:'',
-                // 'Completed on ${DateFormat('MMM dd, yyyy')
-               // .format(offer.timeOfOffer.toDate())}',
+                subtitle: '',
                 color: Colors.green.shade600,
               ),
 
-                if (offer.status == 'Negotiated')
-                 _buildStatusCard(
+            if (offer.status == 'Negotiated')
+              _buildStatusCard(
                 icon: Icons.check_circle,
                 title: 'Negotiated Sent'.tr,
-                subtitle:'',
-                // 'Completed on ${DateFormat('MMM dd, yyyy')
-               // .format(offer.timeOfOffer.toDate())}',
+                subtitle: '',
                 color: Colors.green.shade600,
               ),
-
-
-
           ],
         ),
       ),
     );
+  }
+
+  Future<double> _getProviderRating(String providerId) async {
+    final doc = await FirebaseFirestore.instance.collection('providers').doc(providerId).get();
+
+    return doc.data()?['rate']?.toDouble() ?? 0.0;
+
   }
 
   Widget _buildDetailRow({
@@ -436,6 +436,7 @@ return Obx(() {
       ),
     );
   }
+
   Widget _buildStatusCard({
     required IconData icon,
     required String title,
@@ -457,12 +458,13 @@ return Obx(() {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 9),
                 Text(
                   title,
                   style: TextStyle(
                     color: color,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 20,
                   ),
                 ),
                 Text(
@@ -595,7 +597,4 @@ return Obx(() {
       ),
     );
   }
-
-
-  // ... [Keep all your existing helper methods (_buildDetailRow, _buildStatusCard, etc.)]
 }
