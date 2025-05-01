@@ -16,13 +16,13 @@ class RequestsController extends GetxController{
 
 
   Future<void> getUserRequests() async {
-   // userRequestList=[];
+   userRequestList=[];
 
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('requests')
           .where('userId', isEqualTo: "1")
-          //.orderBy('createdAt', descending: true) // Optional: sort by date
+          .orderBy('timestamp', descending: true) // Optional: sort by date
           .get();
 
       userRequestList = querySnapshot.docs.map((doc) {

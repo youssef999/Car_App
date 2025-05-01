@@ -10,6 +10,8 @@ class RequestModel {
   final String destination3;
   final String carSize;
   final String carStatus;
+  final String userName;
+  final String userId;
   String servicePricing;
   final String placeOfLoading;
   final String placeOfLoading2;
@@ -28,6 +30,7 @@ class RequestModel {
       required this.carSize,
       required this.carStatus,
       required this.servicePricing,
+        required this.userId,required this.userName,
       required this.placeOfLoading,
       required this.providerId,
       required this.status,
@@ -55,6 +58,8 @@ class RequestModel {
       destination: data['placeToGo1']??'4',
       destination2: data['placeToGo2']??"4",
       destination3: data['placeToGo3']??'x',
+      userId: data['userId']??"",
+      userName: data['userName']??"",
       carSize: data['carSize']??'dd',
       carStatus: data['carProblem']??"pp",
        servicePricing: '',
@@ -74,6 +79,8 @@ class RequestModel {
       id: data['id']??"",
       time: data['timestamp'].toDate()??DateTime.now(),
       destination: data['placeToGo1']??'4',
+      userName: data['userName']??"",
+      userId: data['userId']??"",
       destination2: data['placeToGo2']??"4",
       destination3: data['placeToGo3']??'x',
       carSize: data['carSize']??'dd',

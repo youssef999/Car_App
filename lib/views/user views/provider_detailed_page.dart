@@ -8,13 +8,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
- class ProviderDetailsPage extends StatelessWidget {
+ class ProviderDetailsPage extends StatefulWidget {
 
   final Provider provider;
   ProviderDetailsPage({required this.provider});
 
+  @override
+  State<ProviderDetailsPage> createState() => _ProviderDetailsPageState();
+}
 
+class _ProviderDetailsPageState extends State<ProviderDetailsPage> {
   ProviderDetailsController controller = Get.put(ProviderDetailsController());
+
+
+  @override
+  void initState() {
+    controller.getUserName();
+    super.initState();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +108,7 @@ import 'package:get/get.dart';
                 Column(
                   children: [
                     Text(
-                      provider.name,
+                      widget.provider.name,
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                     ),
@@ -106,7 +119,7 @@ import 'package:get/get.dart';
                             size: 20),
                         const SizedBox(width: 4),
                         Text(
-                          '${provider.distance.toStringAsFixed(2)}' + " " +
+                          '${widget.provider.distance.toStringAsFixed(2)}' + " " +
                               'km away'.tr,
                           style: TextStyle(
                               fontSize: 16, color: Colors.grey[600]),
@@ -121,15 +134,15 @@ import 'package:get/get.dart';
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: provider.status == 'نشط'
+                            color: widget.provider.status == 'نشط'
                                 ? Colors.green[100]
                                 : Colors.red[100],
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            '${'Status'.tr}: ${provider.status}',
+                            '${'Status'.tr}: ${widget.provider.status}',
                             style: TextStyle(
-                              color: provider.status == 'نشط'
+                              color: widget.provider.status == 'نشط'
                                   ? Colors.green
                                   : Colors.red,
                               fontWeight: FontWeight.bold,
@@ -149,7 +162,7 @@ import 'package:get/get.dart';
                         size: 20,
                       ),
                       const SizedBox(width: 5,),
-                      Text(provider.rate.toStringAsFixed(2),
+                      Text(widget.provider.rate.toStringAsFixed(2),
                         style: const TextStyle(
                             fontSize: 17, fontWeight: FontWeight.bold),),
                     ],),
@@ -167,7 +180,7 @@ import 'package:get/get.dart';
                           )),
                       onTap:(){
                         Get.to(ProviderReviews(
-                          provider: provider,
+                          provider: widget.provider,
                         ));
                       },
                     ),
@@ -345,7 +358,7 @@ import 'package:get/get.dart';
                 : () {
               if (controller.formKey.currentState!.validate()) {
                 controller.isSubmitting.value = true;
-                controller.submitRequest(provider);
+                controller.submitRequest(widget.provider);
               }
             },
             child: controller.isSubmitting.value
@@ -361,7 +374,4 @@ import 'package:get/get.dart';
           ),
         ));
   }
-
-
-// submitRequest() and sendRequestToProvider() methods stay the same as you wrote them.
 }

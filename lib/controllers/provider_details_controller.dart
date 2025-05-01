@@ -26,6 +26,27 @@ class ProviderDetailsController extends GetxController{
   final RxString destinationCity = ''.obs;
   final RxString destinationDistrict = ''.obs;
 
+
+  String userName = '';
+
+  Future<void> getUserName() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('id', isEqualTo: '1')
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        userName = querySnapshot.docs.first['name'];
+        print("User name: $userName");
+      } else {
+        print("No user found with id '1'.");
+      }
+    } catch (e) {
+      print("Error fetching user name: $e");
+    }
+  }
+
   void submitRequest(Provider provider) {
 
     sendRequestToProvider(
@@ -93,6 +114,7 @@ class ProviderDetailsController extends GetxController{
         'id': docRef.id, // Use the auto-generated document ID
         'providerId': providerId,
         'userId': userId,
+        "userName": userName,
         'carProblem': carProblem,
         'carSize': carSize,
         'hiddenByProvider': false, // Default value

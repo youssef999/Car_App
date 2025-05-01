@@ -1,8 +1,10 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 import 'package:first_project/controllers/provider_controller.dart';
+import 'package:first_project/helper/custom_button.dart';
 import 'package:first_project/models/client_request_model.dart';
 import 'package:first_project/models/provider_offer_model.dart';
+import 'package:first_project/values/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -25,7 +27,7 @@ class ProviderOrders extends StatelessWidget {
           onSelected: (selected) {
             if (selected) controller.updateFilter(value);
           },
-          selectedColor: Colors.amber.shade700,
+          selectedColor: primary,
           backgroundColor: Colors.grey.shade200,
           labelStyle: TextStyle(
             color: controller.selectedFilter == value
@@ -37,7 +39,7 @@ class ProviderOrders extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             side: BorderSide(
               color: controller.selectedFilter == value
-                  ? Colors.amber.shade800
+                  ? Colors.purple
                   : Colors.grey.shade300,
               width: 1.5,
             ),
@@ -90,20 +92,28 @@ class ProviderOrders extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _buildRadioOption(
-                          label: 'accomplished'.tr,
-                          value: 'Done',
-                          controller: _controller,
-                        ),
-                        _buildRadioOption(
                           label: 'pending'.tr,
                           value: 'Pending',
                           controller: _controller,
                         ),
                         _buildRadioOption(
+                          label: 'startOrder'.tr,
+                          value: 'Started',
+                          controller: _controller,
+                        ),
+
+                        _buildRadioOption(
                           label: 'Negotiated'.tr,
                           value: 'Negotiated',
                           controller: _controller,
                         ),
+                        _buildRadioOption(
+                          label: 'accomplished'.tr,
+                          value: 'Done',
+                          controller: _controller,
+                        ),
+
+
                         _buildRadioOption(
                           label: 'rejected'.tr,
                           value: 'Rejected',
@@ -114,11 +124,7 @@ class ProviderOrders extends StatelessWidget {
                         //   value: 'Started',
                         //   controller: _controller,
                         // ),
-                         _buildRadioOption(
-                          label: 'startOrder'.tr,
-                          value: 'Started',
-                          controller: _controller,
-                        ),
+
                       ],
                     ),
                   ),
@@ -555,6 +561,8 @@ class PendingCardrequest extends StatelessWidget {
   Widget build(BuildContext context) {
     final formattedTime = DateFormat('MMMM d, y, h:mm a').format(order.time);
 
+    ProviderController controller = Get.find();
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -579,14 +587,33 @@ class PendingCardrequest extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
+                Container(
+                  decoration:BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.grey[100],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      "userName".tr+" : "+order.userName,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  )
+                ),
                 // Order ID
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+
                     Text(
-                      '${'order_id'.tr}: #${order.id.substring(0, 8)}',
+                      '${" "}${'order_id'.tr}: #${order.id.toString()}',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 11,
                         color: Colors.grey.shade600,
                         fontWeight: FontWeight.w500,
                       ),
@@ -621,17 +648,149 @@ class PendingCardrequest extends StatelessWidget {
                   title: 'time'.tr,
                   value: formattedTime,
                 ),
-                _buildDetailRow(
-                  icon: Icons.location_on,
-                  color: Colors.red.shade400,
-                  title: 'destination'.tr,
-                  value: order.destination.tr,
+
+                _buildSectionHeader('Location of Loading'.tr),
+                Row(children: [
+                  _buildLocationItem(order.destination),
+                  if (order.destination2 != null && order.destination2!.isNotEmpty)
+                    _buildLocationItem(order.destination2!),
+                  if (order.destination3 != null && order.destination3!.isNotEmpty)
+                    _buildLocationItem(order.destination3!),
+                ],),
+
+                const SizedBox(height: 12),
+
+                // Loading places section
+                _buildSectionHeader('destination'.tr),
+
+                Row(children: [
+                  _buildLocationItem(order.placeOfLoading),
+                  if (order.placeOfLoading2 != null && order.placeOfLoading2!.isNotEmpty)
+                    _buildLocationItem(order.placeOfLoading2!),
+                  if (order.placeOfLoading3 != null && order.placeOfLoading3!.isNotEmpty)
+                    _buildLocationItem(order.placeOfLoading3!),
+                ],),
+
+                //
+                // Container(
+                //   decoration:BoxDecoration(
+                //     borderRadius:BorderRadius.circular(12),
+                //     color: Colors.grey[100],
+                //   ),
+                //   child: Column(
+                //     children: [
+                //       Row(
+                //         children: [
+                //           Text( 'destination'.tr,
+                //           style:TextStyle(color:Colors.black,fontSize: 20,fontWeight: FontWeight.w600),
+                //           ),
+                //         ],
+                //       ),
+                //       SizedBox(height: 12,),
+                //       _buildDetailRow(
+                //         icon: Icons.location_on,
+                //         color: Colors.red.shade400,
+                //         title: order.destination.tr,
+                //         value: ''
+                //       ),  SizedBox(height: 5,),
+                //                _buildDetailRow(
+                //             icon: Icons.location_on,
+                //             color: Colors.red.shade400,
+                //             title: order.destination2.tr,
+                //             value: '',
+                //             ),
+                //       SizedBox(height: 5,),
+                //       _buildDetailRow(
+                //             icon: Icons.location_on,
+                //             color: Colors.red.shade400,
+                //             title: order.destination3.tr,
+                //             value: ''
+                //           ),
+                //     ],
+                //   ),
+                // ),
+                //
+                //
+                // Container(
+                //   decoration:BoxDecoration(
+                //     borderRadius:BorderRadius.circular(12),
+                //     color: Colors.grey[100],
+                //   ),
+                //   child: Column(
+                //     children: [
+                //       Row(
+                //         children: [
+                //           Text( 'destination'.tr,
+                //             style:TextStyle(color:Colors.black,fontSize: 20,fontWeight: FontWeight.w600),
+                //           ),
+                //         ],
+                //       ),
+                //       SizedBox(height: 12,),
+                //       _buildDetailRow(
+                //           icon: Icons.location_on,
+                //           color: Colors.red.shade400,
+                //           title: order.destination.tr,
+                //           value: ''
+                //       ),  SizedBox(height: 5,),
+                //       _buildDetailRow(
+                //         icon: Icons.location_on,
+                //         color: Colors.red.shade400,
+                //         title: order.destination2.tr,
+                //         value: '',
+                //       ),
+                //       SizedBox(height: 5,),
+                //       _buildDetailRow(
+                //           icon: Icons.location_on,
+                //           color: Colors.red.shade400,
+                //           title: order.destination3.tr,
+                //           value: ''
+                //       ),
+                //     ],
+                //   ),
+                // ),
+
+
+              const SizedBox(height: 7,),
+                Row(
+                  mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: _buildDetailRow(
+                        icon: Icons.directions_car,
+                        color: Colors.blue.shade400,
+                        title: 'car_size'.tr,
+                        value: order.carSize.tr,
+                      ),
+                    ),
+
+                    SizedBox(
+                      width: 100,
+                      child: _buildDetailRow(
+                        icon: Icons.car_repair,
+                        color: Colors.blue.shade400,
+                        title: 'car_status'.tr,
+                        value: order.carStatus,
+                      ),
+                    ),
+                  ],
                 ),
-                _buildDetailRow(
-                  icon: Icons.directions_car,
-                  color: Colors.blue.shade400,
-                  title: 'car_size'.tr,
-                  value: order.carSize.tr,
+                const SizedBox(height: 7,),
+                //cancel
+                Center(
+                  child: CustomButton(
+                      width: 222,
+                      color:Colors.red,
+                      text: 'Cancel'.tr, onPressed: (){
+
+                    controller.deleteMyRequestAndOffer(
+                      order.id
+                    );
+
+
+
+                         //
+                  }),
                 ),
 
                 const SizedBox(height: 16),
@@ -681,6 +840,69 @@ class PendingCardrequest extends StatelessWidget {
       ),
     );
   }
+
+
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+          fontSize: 14,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLocationItem(String location) {
+    return Container(
+      width: 105,
+      height: 88,
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.location_on, size: 16, color: Colors.grey),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              location,
+              style: const TextStyle(fontSize: 13),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.grey),
+        const SizedBox(width: 8),
+        Text(text, style: const TextStyle(fontSize: 13)),
+      ],
+    );
+  }
+
+  Widget _buildInfoChip(IconData icon, String text) {
+    return Chip(
+      avatar: Icon(icon, size: 16),
+      label: Text(text, style: const TextStyle(fontSize: 12)),
+      backgroundColor: Colors.grey[100],
+      visualDensity: VisualDensity.compact,
+    );
+  }
+
+
 
   Widget _buildDetailRow({
     required IconData icon,

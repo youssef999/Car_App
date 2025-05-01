@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:first_project/controllers/near_provider_controller.dart';
+import 'package:first_project/helper/appMessage.dart';
 import 'package:first_project/helper/custom_appbar.dart';
 import 'package:first_project/helper/custom_button.dart';
 import 'package:first_project/models/provider_model.dart';
@@ -23,9 +25,10 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
   LatLng? currentLocation;
   bool isLoading = false;
   String? errorMessage;
-
+  final box=GetStorage();
   @override
   void initState() {
+   checkProviderLocal();
     super.initState();
     initLocationAndProviders();
    // controller.getCurrentLocation();
@@ -50,6 +53,60 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
     setState(() {
       isLoading = false;
     });
+  }
+
+
+
+  List<String> providerIds = [];
+
+  Future<void> checkProviderLocal() async {
+    print("CHECK PROVIDER LOCAL");
+    // Clear previous data
+    providerIds.clear();
+
+    // Get all requests where userId is "1"
+    final requestsSnapshot = await FirebaseFirestore.instance
+        .collection('requests')
+        .where('userId', isEqualTo: "1")
+        .get();
+
+    // Extract all request IDs
+    final requestIds = requestsSnapshot.docs.map((doc) => doc.id).toList();
+    print("RequestIds: $requestIds");
+
+    if (requestIds.isEmpty) return;
+
+    // Get all checkLocal documents to delete
+    final checkLocalSnapshot = await FirebaseFirestore.instance
+        .collection('checkLocal')
+        .where('requestId', whereIn: requestIds)
+        .get();
+
+    print("Documents to delete: ${checkLocalSnapshot.docs.length}");
+
+    // Batch delete for better performance
+    final batch = FirebaseFirestore.instance.batch();
+    for (final doc in checkLocalSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+
+    // Extract providerIds before deleting (if still needed)
+    providerIds = checkLocalSnapshot.docs
+        .map((doc) => doc['providerId'] as String)
+        .toList();
+    print("ProviderIds:::::::: $providerIds");
+
+
+    if(providerIds.isNotEmpty){
+      for(int i=0;i<providerIds.length;i++){
+        print("ProviderIdsVal: ${providerIds[i]}");
+        providerIds.remove(providerIds[i]);
+      }
+      // Clear local storage
+      await box.write('providerReqId', providerIds);
+      print("ProviderReqId=========="+providerIds.toString());
+    }
   }
 
   @override
@@ -302,7 +359,6 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
                           color:Colors.red,
                           text: 'Cancel'.tr, onPressed: (){
                         controller.cancelRequestToProvider(provider.id);
-
                       }),
                     ],
                   ),
@@ -311,7 +367,7 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
             trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.black54),
             onTap: () {
               if (isRequestSent) {
-                Get.snackbar('request sent to this provider'.tr, 'You have already sent a request to this provider.'.tr);
+                appMessage(text: 'You have already sent a request to this provider.'.tr, context: context,success: false);
               } else {
                 Get.to(() => ProviderDetailsPage(provider: provider));
               }

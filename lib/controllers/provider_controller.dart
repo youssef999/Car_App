@@ -147,6 +147,58 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
 }
 
 
+  Future<void> deleteMyRequestAndOffer(String requestId) async {
+    try {
+      // Get Firestore instance
+      final firestore = FirebaseFirestore.instance;
+
+      // Delete from requests collection where document ID matches requestId
+      //await firestore.collection('requests').doc(requestId).delete();
+      // Delete from offers collection where requestId field matches the provided requestId
+      final offersQuery = firestore.collection('offers').where('requestId', isEqualTo: requestId);
+      final querySnapshot = await offersQuery.get();
+
+      // Delete all matching offers in batch
+      final batch = firestore.batch();
+      for (final doc in querySnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+      print('Successfully deleted request and associated offers');
+      appMessage(text: 'Request deleted successfully'.tr, context: Get.context!,
+      success: false
+      );
+      try {
+        await firestore.collection('requests').doc(requestId).update({
+          "status": 'x'
+        });
+       // console.log('Document status updated successfully');
+      } catch (error) {
+        print("EEE==============$error");
+       // console.error('Error updating document:', error);
+      }
+      triggerNotification('تم الغا الطلب من مقدم الخدمة ');
+      addCheckLocal(requestId);
+
+    } catch (e) {
+      print('Error deleting request and offers: $e');
+      rethrow; // Re-throw the exception if you want calling code to handle it
+    }
+  }
+
+  Future<void> addCheckLocal(String requestId) async {
+    try {
+      await FirebaseFirestore.instance.collection('checkLocal').add({
+        'providerId': 'FggHT4Zv4CdEmX4RQqZx',
+        'requestId': requestId,
+        'createdAt': FieldValue.serverTimestamp(), // Optional: adds a timestamp
+      });
+      print("Data added successfully");
+    } catch (e) {
+      print("Error adding data: $e");
+    }
+  }
+
   Future<void> updateRequestByRequestId({
     required String requestId,
   }) async {
@@ -206,7 +258,8 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
           .where('providerId', isEqualTo: "FggHT4Zv4CdEmX4RQqZx")
          // .where('providerId', isEqualTo: "123456789")
          // .where('status', isEqualTo: 'pending') // Exclude hidden orders
-          .where('status', isEqualTo: 'accepted') // Exclude hidden orders
+        //  .where('status', isEqualTo: 'accepted') // Exclude hidden orders
+          .where('status', isEqualTo: 'pending') // Exclude hidden orders
           .orderBy('timestamp', descending: true)
           // للاسف مش شغال معايا -_0
           .get();
@@ -407,9 +460,9 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
 
 
 
-      appMessage(text: 'Offer sent for Request'.tr, context: Get.context!,
+      //appMessage(text: 'Offer sent for Request'.tr, context: Get.context!,
 
-      );
+    //  );
       triggerNotification('عرض جديد من $providerName');
 
     } catch (e) {
@@ -417,8 +470,6 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
       print("Error sending offer: $e");
     }
   }
-
-
 
   // Send an offer (update request in Firestore)
   Future<void> sendOffer(String requestId, String price) async {

@@ -8,6 +8,7 @@ class AppTranslations extends Translations {
 
           "send_offer":"Send Offer",
           "hide":"Hide",
+          "userName":"User Name",
 
   'aboutApp': 'About the App',
   'about_app_header': 'Your Car, Fixed Fast',
@@ -257,6 +258,7 @@ By continuing to use the app, you agree to the practices described in this Priva
         },
         'ar': {
 
+          "userName": "اسم المستخدم",
           "send_offer":"ارسال العرض",
           "hide":"إخفاء",
 
@@ -381,15 +383,11 @@ By continuing to use the app, you agree to the practices described in this Priva
           "call_me":"اتصل بي",      
           "price":"السعر",
 
-          "Negotiated":"تم التوافض",
+          "Negotiated":"مطلوب التفاوض ",
 
           "New Price (SAR)":"السعر الجديد (SAR)",
-         
-         
           "Submit":"تاكيد",
           "Cancel":"إلغاء",
-
-
           "Enter counter offer":"ادخل سعر التفاوض",
           "Negotiate Price":"سعر التفاوض ",
           "pending":" بانتظار الموافقة ",
