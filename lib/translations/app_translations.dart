@@ -4,7 +4,16 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'en':
+
         {
+          "Settings":"Settings",
+
+          "Negotiated":"Negotiated",
+          "Price updated to":"Price updated to",
+
+          "Started":"Started",
+
+          "Negotiated Offer":"Negotiated Offer",
 
           "send_offer":"Send Offer",
           "hide":"Hide",
@@ -197,6 +206,22 @@ By continuing to use the app, you agree to the practices described in this Priva
           "price":"Price",
           "call_now":"Call Now",
           "call_me":"call_me",
+
+  "login": "Login",
+  "en": "English",
+  "ar": "العربية",
+  "ur": "اردو",
+  "User": "User",
+  "Provider": "Service Provider",
+  "select_your_account_type": "Select your account type",
+  "enter_your_phone_number": "Enter your phone number",
+  "enter_phone_number_hint": "e.g. 1234567890",
+  "otp": "OTP",
+  "enter_otp_code": "Enter verification code",
+  "enter_otp_hint": "Enter 6-digit code",
+  "sendOTP": "Send OTP",
+  "your_car_service_solution": "Your car service solution",
+  "by_continuing_you_agree": "By continuing, you agree to our Terms of Service and Privacy Policy",
           "confirm_offer":"Confirm Offer",
           "reject_offer":"Reject Offer",
           "New Price":"New Price (SAR)",
@@ -258,8 +283,32 @@ By continuing to use the app, you agree to the practices described in this Priva
         },
         'ar': {
 
+          "Started":"تم بدء المهمة",
+
+          "Settings":"الاعدادات",
+
+          "Negotiated Offer":"متابعة عرض التفاوض المرسل",
+
+          "Negotiated":"مطلوب التفاوض",
+
           "userName": "اسم المستخدم",
           "send_offer":"ارسال العرض",
+
+  "login": "تسجيل الدخول",
+  "en": "الإنجليزية",
+  "ar": "العربية",
+  "ur": "الأردية",
+  "User": "مستخدم",
+  "Provider": "مقدم الخدمة",
+  "select_your_account_type": "اختر نوع حسابك",
+  "enter_your_phone_number": "أدخل رقم هاتفك",
+  "enter_phone_number_hint": "مثال: 1234567890",
+  "otp": "كود التحقق",
+  "enter_otp_code": "أدخل كود التحقق",
+  "enter_otp_hint": "أدخل الكود المكون من 6 أرقام",
+  "sendOTP": "إرسال كود التحقق",
+  "your_car_service_solution": "حلول صيانة سيارتك",
+  "by_continuing_you_agree": "بالمتابعة، أنت توافق على شروط الخدمة وسياسة الخصوصية",
           "hide":"إخفاء",
 
           "Please enter a valid price greater than zero.":"ادخل سعر مناسب للمهمة",
@@ -406,6 +455,7 @@ By continuing to use the app, you agree to the practices described in this Priva
           "Request submitted successfully": "تم ارسال الطلب بنجاح",
           "Success": " نجاح العملية",
           "Submit Request": "إرسال الطلب",
+          "Price updated to": "تم تحديث السعر",
           "Destination": "الوجهة",
           "Location of Loading": "موقع التحميل",
           "Car Malfunction Cause": "سبب المشكلة",
@@ -477,7 +527,7 @@ By continuing to use the app, you agree to the practices described in this Priva
           'filter_by': 'تصفية الطلبات حسب :',
           'Please enter the following data : ':
               'برجاء ادخال البيانات التالية :',
-          'Dashboard': 'الصفحة الرئيسية',
+          'Dashboard': 'الرئيسية',
           'Offers': 'العروض',
           'No offers found': 'لا يوجد عروض',
           'SAR': 'ريال',

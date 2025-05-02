@@ -1,24 +1,26 @@
 import 'package:first_project/controllers/client_controller.dart';
-import 'package:first_project/values/colors.dart';
 import 'package:first_project/views/user%20views/nearest_providers.dart';
 import 'package:first_project/views/user%20views/requests_view.dart';
 import 'package:first_project/views/user%20views/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
-import 'offers_page.dart'; // New page for offers
+import 'offers_page.dart';
 
 class MainUserPage extends StatelessWidget {
   final int index;
+  final Color primaryColor = const Color(0xFF009d88);
+  final Color secondaryColor = Colors.white;
+  final Color accentColor = const Color(0xFF33c9b6);
+  final Color backgroundColor = const Color(0xFFf5f5f5);
 
   MainUserPage({this.index = 0, Key? key}) : super(key: key);
 
-  final ClientController clientController =
-  Get.put(ClientController());
+  final ClientController clientController = Get.put(ClientController());
 
   @override
   Widget build(BuildContext context) {
-    // Set the index only the first time build is called (not on every rebuild)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (clientController.currentIndex.value != index) {
         clientController.changePage(index);
@@ -26,7 +28,8 @@ class MainUserPage extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: primary,
+      backgroundColor: backgroundColor,
+      extendBody: true, // Important for curved navigation bar
       body: Obx(() {
         switch (clientController.currentIndex.value) {
           case 0:
@@ -42,42 +45,47 @@ class MainUserPage extends StatelessWidget {
         }
       }),
       bottomNavigationBar: Obx(() {
-        return BottomNavigationBar(
-          backgroundColor: primary,
-          selectedLabelStyle: const TextStyle(color: Colors.white),
-          unselectedItemColor: Colors.white,
-          unselectedLabelStyle: const TextStyle(color: Colors.black),
-          selectedItemColor: Colors.white,
-          showSelectedLabels: true,
-          currentIndex: clientController.currentIndex.value,
+        return CurvedNavigationBar(
+          backgroundColor: Colors.transparent,
+          color: primaryColor,
+
+          buttonBackgroundColor: primaryColor,
+          height: 55,
+          animationDuration: const Duration(milliseconds: 200),
+          animationCurve: Curves.easeInOutCubic,
+          index: clientController.currentIndex.value,
+          items: [
+            _buildNavItem(Icons.dashboard, 'Dashboard'.tr),
+            _buildNavItem(Icons.local_offer_outlined, 'Offers'.tr),
+            _buildNavItem(Icons.request_page_outlined, 'Requests'.tr),
+            _buildNavItem(Icons.settings_outlined, 'Settings'.tr),
+          ],
           onTap: (index) {
             clientController.changePage(index);
           },
-          items: [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.dashboard),
-              label: 'Dashboard'.tr,
-              backgroundColor: primary,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.local_offer_outlined),
-              label: 'Offers'.tr,
-              backgroundColor: primary,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.request_page_outlined),
-              label: 'Requests'.tr,
-              backgroundColor: primary,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.settings_outlined),
-              label: 'settings'.tr,
-              backgroundColor: primary,
-            ),
-          ],
         );
       }),
     );
   }
-}
 
+  Widget _buildNavItem(IconData icon, String text) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 24, color: secondaryColor),
+        const SizedBox(height: 2),
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: secondaryColor,
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

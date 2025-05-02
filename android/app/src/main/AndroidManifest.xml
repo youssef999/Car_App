@@ -6,11 +6,12 @@
 
 
 
+
     <application
-        android:label="first_project"
+        android:label="fix car app"
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

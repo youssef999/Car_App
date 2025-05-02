@@ -41,11 +41,18 @@ class ProviderController extends GetxController {
 
   bool get isLoading => _isLoading.value;
 
+  final RxString _selectedFilter ='pending'.tr.obs;
+  //'accomplished'.obs;
+
+  // Getter for selected filter
+  String get selectedFilter => _selectedFilter.value;
+
   @override
   void onInit() {
-    // TODO: implement onInit
+    updateFilter(selectedFilter);
     super.onInit();
     fetchOrders();
+   // updateFilter('pending');
     fetchNotifications(); // Fetch notifications when the controller is initialized
   }
 
@@ -221,7 +228,7 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
       // Commit the batch update
       await batch.commit();
       print('Successfully updated ${querySnapshot.size} offers');
-      Get.snackbar('Success', '${querySnapshot.size} offers updated successfully');
+     // Get.snackbar('Success', '${querySnapshot.size} offers updated successfully');
     } catch (e) {
       print('Error updating offers: $e');
       Get.snackbar('Error', 'Failed to update offers: ${e.toString()}');
@@ -235,7 +242,6 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
 
   final RxList<RequestModel> servicePendingRequests 
   = <RequestModel>[].obs;
-
   /// Loads pending requests from Firestore and updates the observable list
   /// [servicePendingRequests].
   ///
@@ -256,10 +262,8 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
       final querySnapshot = await _firestore
           .collection('requests')
           .where('providerId', isEqualTo: "FggHT4Zv4CdEmX4RQqZx")
-         // .where('providerId', isEqualTo: "123456789")
-         // .where('status', isEqualTo: 'pending') // Exclude hidden orders
-        //  .where('status', isEqualTo: 'accepted') // Exclude hidden orders
-          .where('status', isEqualTo: 'pending') // Exclude hidden orders
+          .where('status', whereIn: ['pending', 'Negotiated']) // Include both statuses
+        //  .where('status', isEqualTo: 'pending') // Exclude hidden orders
           .orderBy('timestamp', descending: true)
           // للاسف مش شغال معايا -_0
           .get();
@@ -275,7 +279,7 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
         }).toList(),
       );
       print("ssssss==$servicePendingRequests");
-     
+      update();
     } catch (e) {
       print("ERRRRRRRR000R0RR==$e");
       Get.snackbar('Error', 'Failed to load requests: $e');
@@ -445,8 +449,13 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
         'price': price,
         'timeOfOffer': Timestamp.fromDate(DateTime.now()),
         'placeOfLoading': request.placeOfLoading,
+        'placeOfLoading2': request.placeOfLoading2,
+        'placeOfLoading3': request.placeOfLoading3,
         'destination': request.destination,
+        'destination2': request.destination2,
+        'destination3': request.destination3,
         'carSize': request.carSize,
+        'carStatus':request.carStatus,
       });
 
       // Update request doc
@@ -546,10 +555,6 @@ success: false
     }
   }
 
-  final RxString _selectedFilter = 'accomplished'.obs;
-
-  // Getter for selected filter
-  String get selectedFilter => _selectedFilter.value;
 
   // Method to update the filter
   void updateFilter(String filter) {

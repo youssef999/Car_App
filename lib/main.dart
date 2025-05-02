@@ -10,9 +10,12 @@ import 'package:first_project/views/home_view.dart';
 import 'package:first_project/views/login_view.dart';
 import 'package:first_project/views/otp_view.dart';
 import 'package:first_project/views/provider%20views/provider_dashboard.dart';
+import 'package:first_project/views/splash/splash_view.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 
   void main() async {
     
@@ -45,6 +48,7 @@ import 'package:get_storage/get_storage.dart';
   });
   // Set the background handler
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  checkLocationPermission();
   runApp(const MyApp());
  }
 
@@ -67,6 +71,43 @@ void initializeNotificationChannel() {
   );
 }
 
+
+Future<bool> requestLocationPermission() async {
+  // First, check if location services are enabled.
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are not enabled, request the user to enable them.
+    return false;
+  }
+
+  // Check for location permission
+  PermissionStatus permission = await Permission.location.status;
+
+  if (permission.isGranted) {
+    return true;
+  } else if (permission.isDenied) {
+    // Request permission
+    PermissionStatus result = await Permission.location.request();
+    return result.isGranted;
+  } else if (permission.isPermanentlyDenied) {
+    // Open app settings so the user can manually enable permission
+    await openAppSettings();
+    return false;
+  }
+
+  return false;
+}
+
+void checkLocationPermission() async {
+  bool hasPermission = await requestLocationPermission();
+  if (hasPermission) {
+    // Access location now
+    Position position = await Geolocator.getCurrentPosition();
+    print('User location: ${position.latitude}, ${position.longitude}');
+  } else {
+    print('Location permission not granted');
+  }
+}
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   // This widget is the root of your application.
@@ -78,7 +119,9 @@ class MyApp extends StatelessWidget {
       title: "Car Fix App",
       locale: const Locale('ar'),
       translations: AppTranslations(),
-      home: LoginPage(),
+      home: SplashView(),
+
+      //LoginPage(),
       //NearestProvidersPage(),
       //endRequestsPage(),
       getPages:[

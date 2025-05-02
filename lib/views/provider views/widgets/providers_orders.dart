@@ -9,11 +9,69 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class ProviderOrders extends StatelessWidget {
+class ProviderOrders extends StatefulWidget {
+  @override
+  State<ProviderOrders> createState() => _ProviderOrdersState();
+}
+
+
+
+
+
+Widget _buildSectionHeader(String title) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(
+      title,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+        fontSize: 14,
+      ),
+    ),
+  );
+}
+
+Widget _buildLocationItem(String location) {
+  return Container(
+    width: 105,
+    height: 88,
+    margin: const EdgeInsets.only(bottom: 6),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    decoration: BoxDecoration(
+      color: Colors.grey[50],
+      borderRadius: BorderRadius.circular(6),
+      border: Border.all(color: Colors.grey[200]!),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.location_on, size: 16, color: Colors.grey),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            location,
+            style: const TextStyle(fontSize: 13),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+class _ProviderOrdersState extends State<ProviderOrders> {
   final ProviderController _controller = Get.find();
 
   @override
+  void initState() {
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     Widget _buildRadioOption({
       required String label,
       required String value,
@@ -26,6 +84,8 @@ class ProviderOrders extends StatelessWidget {
           selected: controller.selectedFilter == value,
           onSelected: (selected) {
             if (selected) controller.updateFilter(value);
+          //  print("ppp=="+selected.toString());x
+            print("ppp=="+controller.selectedFilter.toString());
           },
           selectedColor: primary,
           backgroundColor: Colors.grey.shade200,
@@ -284,11 +344,11 @@ class OrderCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${'order_id'.tr}: #${order.id.substring(0, 8)}',
+                      '${order.carStatus}',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 16,
                         color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     Container(
@@ -317,16 +377,38 @@ class OrderCard extends StatelessWidget {
                 // Order Details
                 _buildDetailRow(
                   icon: Icons.access_time,
-                  color: Colors.amber.shade600,
+                  color: appBarColor2,
                   title: 'time'.tr,
                   value: formattedTime,
                 ),
-                _buildDetailRow(
-                  icon: Icons.location_on,
-                  color: Colors.red.shade400,
-                  title: 'destination'.tr,
-                  value: order.destination.tr,
-                ),
+
+                _buildSectionHeader('Location of Loading'.tr),
+                Row(children: [
+                  _buildLocationItem(order.destination),
+                  if (order.destination2 != null && order.destination2!.isNotEmpty)
+                    _buildLocationItem(order.destination2!),
+                  if (order.destination3 != null && order.destination3!.isNotEmpty)
+                    _buildLocationItem(order.destination3!),
+                ],),
+
+                const SizedBox(height: 12),
+
+                // Loading places section
+                _buildSectionHeader('destination'.tr),
+
+                Row(children: [
+                  _buildLocationItem(order.placeOfLoading),
+                  if (order.placeOfLoading2 != null && order.placeOfLoading2!.isNotEmpty)
+                    _buildLocationItem(order.placeOfLoading2!),
+                  if (order.placeOfLoading3 != null && order.placeOfLoading3!.isNotEmpty)
+                    _buildLocationItem(order.placeOfLoading3!),
+                ],),
+                // _buildDetailRow(
+                //   icon: Icons.location_on,
+                //   color: Colors.red.shade400,
+                //   title: 'destination'.tr,
+                //   value: order.destination.tr,
+                // ),
                 _buildDetailRow(
                   icon: Icons.directions_car,
                   color: Colors.blue.shade400,
@@ -526,7 +608,7 @@ class OrderCard extends StatelessWidget {
       case 'Accepted':
         return Colors.blue;
       case 'Negotiated':
-        return Colors.purple;
+        return primary;
       case 'Rejected':
         return Colors.red;
       default:
@@ -644,7 +726,7 @@ class PendingCardrequest extends StatelessWidget {
                 // Order Details
                 _buildDetailRow(
                   icon: Icons.access_time,
-                  color: Colors.amber.shade600,
+                  color: appBarColor2,
                   title: 'time'.tr,
                   value: formattedTime,
                 ),
@@ -755,7 +837,7 @@ class PendingCardrequest extends StatelessWidget {
                   mainAxisAlignment:MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 100,
+                      width: 180,
                       child: _buildDetailRow(
                         icon: Icons.directions_car,
                         color: Colors.blue.shade400,
@@ -776,6 +858,23 @@ class PendingCardrequest extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 7,),
+
+
+                (order.status=='Negotiated')?
+                Center(
+                  child: CustomButton(
+                      width: 222,
+                      color:buttonColor,
+                      text: 'Negotiated Offer'.tr, onPressed: (){
+
+                    controller.updateFilter('Negotiated');
+
+
+
+
+                    //
+                  }),
+                ):
                 //cancel
                 Center(
                   child: CustomButton(
@@ -786,10 +885,7 @@ class PendingCardrequest extends StatelessWidget {
                     controller.deleteMyRequestAndOffer(
                       order.id
                     );
-
-
-
-                         //
+     //
                   }),
                 ),
 
@@ -812,7 +908,9 @@ class PendingCardrequest extends StatelessWidget {
                             elevation: 2,
                             shadowColor: Colors.green.withOpacity(0.3),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+
+                          },
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -843,45 +941,6 @@ class PendingCardrequest extends StatelessWidget {
 
 
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
-          fontSize: 14,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLocationItem(String location) {
-    return Container(
-      width: 105,
-      height: 88,
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.location_on, size: 16, color: Colors.grey),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              location,
-              style: const TextStyle(fontSize: 13),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildInfoRow(IconData icon, String text) {
     return Row(
@@ -959,11 +1018,14 @@ class PendingCardrequest extends StatelessWidget {
         return Colors.green;
       case 'Pending':
       case 'pending':
+      case 'Negotiated':
         return Colors.orange;
       case 'Accepted':
         return Colors.blue;
       case 'Rejected':
         return Colors.red;
+      case 'Started':
+        return Colors.orange;
       default:
         return Colors.grey;
     }
@@ -973,6 +1035,10 @@ class PendingCardrequest extends StatelessWidget {
     switch (status) {
       case 'Done':
         return 'accomplished'.tr;
+      case 'Started':
+        return 'Started'.tr;
+      case 'Negotiated':
+        return 'Negotiated'.tr;
       case 'Pending':
       case 'pending':
         return 'pending'.tr;

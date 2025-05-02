@@ -237,9 +237,9 @@ return Obx(() {
                     color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
-                      BoxShadow(
+                      const BoxShadow(
                         color: Colors.black12,
-                        offset: const Offset(0, 2),
+                        offset: Offset(0, 2),
                         blurRadius: 4,
                       ),
                     ],
@@ -278,9 +278,184 @@ return Obx(() {
             _buildDetailRow(
               icon: Icons.work_outline,
               title: 'Service'.tr,
-              value: offer.id.tr,
+              value: offer.carStatus.tr,
               color: Colors.purple.shade600,
             ),
+            const SizedBox(height: 6),
+            // _buildDetailRow(
+            //   icon: Icons.location_on_outlined,
+            //   title: 'Destination'.tr,
+            //   value: offer.destination.tr,
+            //   color: Colors.purple.shade600,
+            // ),
+            // Row(
+            //   mainAxisAlignment:MainAxisAlignment.spaceAround,
+            //   children: [
+            //     Container(
+            //       decoration:BoxDecoration(
+            //         borderRadius: BorderRadius.circular(16),
+            //         color: Colors.grey[200]
+            //       ),
+            //       child: Padding(
+            //         padding: const EdgeInsets.all(13.0),
+            //         child: Column(children: [
+            //           SizedBox(height: 6,),
+            //           Text(
+            //             'Location of Loading'.tr,
+            //               //'Destination'.tr,
+            //               style: TextStyle(
+            //             color: Colors.black,
+            //             fontSize: 16,fontWeight: FontWeight.bold
+            //           )),
+            //           Text(offer.placeOfLoading.tr,style: TextStyle(
+            //             color: Colors.black,
+            //             fontSize: 12,
+            //           )),
+            //           Text(offer.placeOfLoading2.tr,style: TextStyle(
+            //             color: Colors.black,
+            //             fontSize: 12,
+            //           )),
+            //           Text(offer.placeOfLoading3.tr,style: TextStyle(
+            //             color: Colors.black,
+            //             fontSize: 12,
+            //           )),
+            //         ],),
+            //       ),
+            //     ),
+            //     Container(
+            //       decoration:BoxDecoration(
+            //           borderRadius: BorderRadius.circular(16),
+            //           color: Colors.grey[200]
+            //       ),
+            //       child: Padding(
+            //         padding: const EdgeInsets.all(13.0),
+            //         child: Column(children: [
+            //           SizedBox(height: 6,),
+            //           Text(
+            //               'Destination'.tr,
+            //               style: TextStyle(
+            //             color: Colors.black,fontWeight:FontWeight.bold,
+            //             fontSize: 16,
+            //           )),
+            //           Text(offer.destination.tr,style: TextStyle(
+            //             color: Colors.black,
+            //             fontSize: 12,
+            //           )),
+            //           Text(offer.destination2.tr,style: TextStyle(
+            //             color: Colors.black,
+            //             fontSize: 12,
+            //           )),
+            //           Text(offer.destination3.tr,style: TextStyle(
+            //             color: Colors.black,
+            //             fontSize: 12,
+            //           )),
+            //         ],),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+
+
+
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // Loading Location Card
+                Card(
+                  elevation: 2, // Subtle shadow
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.grey[200],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.location_on_outlined,
+                                  size: 20,
+                                  color: Colors.blue[700]),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Location of Loading'.tr,
+                                style: TextStyle(
+                                  color: Colors.blue[800],
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600, // Semi-bold
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          _buildAddressLine(offer.placeOfLoading.tr),
+                          if (offer.placeOfLoading2.tr.isNotEmpty)
+                            _buildAddressLine(offer.placeOfLoading2.tr),
+                          if (offer.placeOfLoading3.tr.isNotEmpty)
+                            _buildAddressLine(offer.placeOfLoading3.tr),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Destination Card
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.grey[200],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.flag_outlined,
+                                  size: 20,
+                                  color: Colors.green[700]),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Destination'.tr,
+                                style: TextStyle(
+                                  color: Colors.green[800],
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          _buildAddressLine(offer.destination.tr),
+                          if (offer.destination2.tr.isNotEmpty)
+                            _buildAddressLine(offer.destination2.tr),
+                          if (offer.destination3.tr.isNotEmpty)
+                            _buildAddressLine(offer.destination3.tr),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+
+
+            const SizedBox(height: 6),
             _buildDetailRow(
               icon: Icons.attach_money,
               title: 'price'.tr,
@@ -385,7 +560,20 @@ return Obx(() {
     );
   }
 
-  Future<double> _getProviderRating(String providerId) async {
+   Widget _buildAddressLine(String text) {
+     return Padding(
+       padding: const EdgeInsets.only(bottom: 4),
+       child: Text(
+         text,
+         style: TextStyle(
+           color: Colors.grey[800],
+           fontSize: 13,
+           height: 1.4, // Better line height
+         ),
+       ),
+     );
+   }
+     Future<double> _getProviderRating(String providerId) async {
     final doc = await FirebaseFirestore.instance.collection('providers').doc(providerId).get();
 
     return doc.data()?['rate']?.toDouble() ?? 0.0;
@@ -458,7 +646,7 @@ return Obx(() {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 9),
+                const SizedBox(height: 9),
                 Text(
                   title,
                   style: TextStyle(

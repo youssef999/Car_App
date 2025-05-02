@@ -7,28 +7,38 @@ class ProviderOfferModel {
   final String providerName;
   final String providerImage;
   final String requestId;
-  
+  final String carStatus;
+
   final double distance;
   final String price;
   final Timestamp timeOfOffer;
   final String status;
   final String carSize;
   final String placeOfLoading;
+  final String placeOfLoading2;
+  final String placeOfLoading3;
   final String destination;
+  final String destination2;
+  final String destination3;
 
   ProviderOfferModel({
     required this.id,
     required this.providerId,
     required this.userId,
     required this.requestId,
+    required this.destination2,
+    required this.destination3,
     required this.providerName,
     required this.providerImage,
     required this.distance,
     required this.price,
     required this.timeOfOffer,
     required this.status,
+    required this.carStatus,
     required this.carSize,
     required this.placeOfLoading,
+    required this.placeOfLoading2,
+    required this.placeOfLoading3,
     required this.destination,
   });
 
@@ -47,8 +57,13 @@ class ProviderOfferModel {
       timeOfOffer: data['timeOfOffer']??Timestamp.now(),
       status: data['status']??'Pending',
       carSize: data['carSize']??'',
+      carStatus: data['carStatus']??'',
       placeOfLoading: data['placeOfLoading']??"",
+      placeOfLoading2: data['placeOfLoading2']??"",
+      placeOfLoading3: data['placeOfLoading3']??"",
       destination: data['destination']??"x",
+      destination2: data['destination2']??"x",
+      destination3: data['destination3']??"x",
     );
   }
 
@@ -65,9 +80,14 @@ class ProviderOfferModel {
       timeOfOffer: (json['timeOfOffer']??Timestamp.now()), // Parse ISO 8601 string
       status: json['status']??"",
       carSize: json['carSize']??'',
+      carStatus: json['carStatus']??'',
       providerImage: json['image'],
       placeOfLoading: json['placeOfLoading']??"",
+      placeOfLoading2: json['placeOfLoading2']??"",
+      placeOfLoading3: json['placeOfLoading3']??"",
       destination: json['destination']??"",
+      destination2: json['destination2']??"",
+      destination3: json['destination3']??"",
     );
   }
 

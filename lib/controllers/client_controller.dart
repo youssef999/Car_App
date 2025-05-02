@@ -293,8 +293,12 @@ Future<void> fetchDoneOffers() async {
         "price": (newPrice),
         'status': 'Negotiated',
       });
+      await _firestore.collection('requests').doc(offer.requestId).update({
+        // 'servicePricing': (newPrice),
+        // "price": (newPrice),
+        'status': 'Negotiated',
+      });
       //Get.snackbar('Success'.tr, "${'Price updated to'.tr}$newPrice" );
-
       appMessage(text: "${'Price updated to'.tr}$newPrice", context: Get.context!);
       // NotificationService.sendNotification
       //   (token!, 'تفاوض','تم ارسال طلب تفاوض ');

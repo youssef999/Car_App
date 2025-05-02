@@ -114,7 +114,7 @@ class _RequestsViewState extends State<RequestsView> {
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.orange.withOpacity(0.1),
+                                        color: Colors.greenAccent.withOpacity(0.1),
                                         blurRadius: 4,
                                         spreadRadius: 1,
                                       ),
@@ -125,11 +125,11 @@ class _RequestsViewState extends State<RequestsView> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          "${"Request".tr} #  ${request.id.substring(0, 8)}",
+                                          "${" "}${"Request".tr} #  ${request.id.toString()}",
                                           style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.orange,
+                                            color: Colors.green,
                                           ),
                                         ),
                                       ),
@@ -180,27 +180,41 @@ class _RequestsViewState extends State<RequestsView> {
                                 const SizedBox(height: 12),
 
                                 // Loading Information with improved layout
-                                _buildLocationSection(
-                                  icon: Icons.upload,
-                                  title: "loadingPoints".tr,
-                                  locations: [
-                                    request.placeOfLoading,
+                                Row(
+                                  mainAxisAlignment:MainAxisAlignment.spaceAround,
+                                  children: [
+                                    SizedBox(
+                                      width: 122,
+                                      child: _buildLocationSection(
+                                        icon: Icons.upload,
+                                        title: "loadingPoints".tr,
+                                        locations: [
+                                          request.placeOfLoading,
 
-                                    if (request.placeOfLoading2.isNotEmpty) request.placeOfLoading2,
-                                    if (request.placeOfLoading3.isNotEmpty) request.placeOfLoading3,
+                                          if (request.placeOfLoading2.isNotEmpty) request.placeOfLoading2,
+                                          if (request.placeOfLoading3.isNotEmpty) request.placeOfLoading3,
+                                        ],
+                                      ),
+                                    ),
+
+
+                                    SizedBox(
+                                      width: 110,
+                                      child: _buildLocationSection(
+                                        icon: Icons.location_on,
+                                        title: "destinations".tr,
+                                        locations: [
+                                          request.destination,
+                                          if (request.destination2.isNotEmpty) request.destination2,
+                                          if (request.destination3.isNotEmpty) request.destination3,
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
 
                                 // Destinations section
-                                _buildLocationSection(
-                                  icon: Icons.location_on,
-                                  title: "destinations".tr,
-                                  locations: [
-                                    request.destination,
-                                    if (request.destination2.isNotEmpty) request.destination2,
-                                    if (request.destination3.isNotEmpty) request.destination3,
-                                  ],
-                                ),
+
 
                                 const SizedBox(height: 2),
                                 _buildInfoCard(
@@ -298,10 +312,13 @@ class _RequestsViewState extends State<RequestsView> {
 
             },
           ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.orange,
-        onPressed: () => controller.getUserRequests(),
-        child: const Icon(Icons.refresh, color: Colors.white),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom:52.0),
+        child: FloatingActionButton(
+          backgroundColor: appBarColor2,
+          onPressed: () => controller.getUserRequests(),
+          child: const Icon(Icons.refresh, color: Colors.white),
+        ),
       ),
     );
   }

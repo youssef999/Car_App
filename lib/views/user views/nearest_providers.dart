@@ -49,9 +49,8 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
     } catch (e) {
       errorMessage = e.toString();
     }
-
     setState(() {
-      isLoading = false;
+      //isLoading = false;
     });
   }
 
@@ -63,7 +62,6 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
     print("CHECK PROVIDER LOCAL");
     // Clear previous data
     providerIds.clear();
-
     // Get all requests where userId is "1"
     final requestsSnapshot = await FirebaseFirestore.instance
         .collection('requests')
