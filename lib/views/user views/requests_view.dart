@@ -291,7 +291,11 @@ class _RequestsViewState extends State<RequestsView> {
                                         elevation: 4, // إضافة ظل للزر
                                       ),
                                       onPressed: (){
-                                        controller.cancelRequest(request.id);
+
+
+                                        controller.cancelRequest(request.id,
+                                        request.providerId
+                                        );
                                       }, child: Text(
                                     "cancelRequest".tr,style:TextStyle(color:textColorLight),
                                   )),

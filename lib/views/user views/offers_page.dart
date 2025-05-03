@@ -34,7 +34,7 @@ class _OffersPageState extends State<OffersPage> {
             backgroundColor: Colors.white,
             appBar: AppBar(
               title: Text(
-                'My Tasks'.tr,
+                'My Task'.tr,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 22,
@@ -476,7 +476,8 @@ return Obx(() {
                   ),
                   const SizedBox(height: 16),
                   CustomButton(text: 'simple track'.tr, onPressed: (){
-                    Get.to(NearestProvidersPage());
+                    Get.to(NearestProvidersPage(isBack: true,
+                    ));
                 //   Get.off(MainUserPage(index: 0,));
                   }),
                   // SizedBox(

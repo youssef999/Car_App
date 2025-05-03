@@ -21,6 +21,10 @@ class AppTranslations extends Translations {
 
   'aboutApp': 'About the App',
   'about_app_header': 'Your Car, Fixed Fast',
+
+          "View Order Details":"View Order Details",
+
+          "Request deleted successfully":"Request deleted successfully",
   'about_app_description': '''
 This app helps you submit a repair request for your car in an easy and fast way. 
 Multiple service providers will receive your request and can send you their offers within seconds.
@@ -283,6 +287,8 @@ By continuing to use the app, you agree to the practices described in this Priva
         },
         'ar': {
 
+          "View Order Details":"عرض تفاصيل الطلب",
+
           "Started":"تم بدء المهمة",
 
           "Settings":"الاعدادات",
@@ -314,6 +320,10 @@ By continuing to use the app, you agree to the practices described in this Priva
           "Please enter a valid price greater than zero.":"ادخل سعر مناسب للمهمة",
 
   'aboutApp': 'عن التطبيق',
+
+          "Request deleted successfully":"تم حذف عرضك ",
+
+
   'about_app_header': 'سيارتك تُصلح بسرعة',
   'about_app_description': '''
 يساعدك هذا التطبيق على تقديم طلب صيانة لسيارتك بطريقة سهلة وسريعة.

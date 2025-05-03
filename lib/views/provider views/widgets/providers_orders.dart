@@ -866,28 +866,27 @@ class PendingCardrequest extends StatelessWidget {
                       width: 222,
                       color:buttonColor,
                       text: 'Negotiated Offer'.tr, onPressed: (){
-
                     controller.updateFilter('Negotiated');
-
-
-
-
                     //
                   }),
                 ):
                 //cancel
-                Center(
-                  child: CustomButton(
-                      width: 222,
-                      color:Colors.red,
-                      text: 'Cancel'.tr, onPressed: (){
-
-                    controller.deleteMyRequestAndOffer(
-                      order.id
-                    );
+     //            Center(
+     //              child: CustomButton(
+     //                  width: 222,
+     //                  color:Colors.red,
+     //                  text: 'Cancel'.tr, onPressed: (){
      //
-                  }),
-                ),
+     //                controller.deleteMyRequestAndOffer(
+     //                  order.id
+     //                );
+     //
+     //                controller.updateFilter('Pending');
+     //
+     //
+     // //
+     //              }),
+     //            ),
 
                 const SizedBox(height: 16),
 

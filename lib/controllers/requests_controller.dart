@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../views/user views/main_user_page.dart';
+
 class RequestsController extends GetxController{
 
 
@@ -47,7 +49,7 @@ class RequestsController extends GetxController{
     }
   }
 
-  Future<void> cancelRequest(String requestId) async {
+  Future<void> cancelRequest(String requestId,String providerId) async {
     try {
       // First check if the request exists
       final docSnapshot = await FirebaseFirestore.instance
@@ -65,19 +67,42 @@ class RequestsController extends GetxController{
           .doc(requestId)
           .delete();
 
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('offers')
+          .where('requestId', isEqualTo: requestId)
+          .get();
+
+// Step 2: Delete each document in a batch (for efficiency)
+      final batch = FirebaseFirestore.instance.batch();
+      for (final doc in querySnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+
+// Step 3: Commit the batch
+      await batch.commit();
+
+
       print('Successfully deleted request: $requestId');
       getUserRequests();
       // Optional: Show success message to user
 
 
       appMessage(text:  'Request cancelled successfully'.tr , context: Get.context!,
-
       );
 
 
+      List providerIds = box.read('providerReqId') ?? [];
+
+      providerIds.remove(providerId);
+      await box.write('providerReqId', providerIds);
+      print("ProviderReqId=========="+providerIds.toString());
+
+      Get.offAll(MainUserPage(
+        index: 0,
+      ));
+
     } catch (e) {
       print('Error cancelling request: $e');
-
 
       appMessage(text:   'Failed to cancel request: ${e.toString()}'.tr, context: Get.context!,
 success: false

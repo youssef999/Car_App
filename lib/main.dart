@@ -37,7 +37,7 @@ import 'package:permission_handler/permission_handler.dart';
   // ignore: duplicate_ignore
   // ignore: avoid_print
   print('FCM Token: $token');
-
+  deleteCheckAtFirstOnly();
   // Listen for incoming messages
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     // ignore: duplicate_ignore
@@ -69,6 +69,22 @@ void initializeNotificationChannel() {
       ),
     ],
   );
+}
+
+
+deleteCheckAtFirstOnly(){
+  //await box.write('providerReqId', providerIds);
+  final box=GetStorage();
+ // List providerIds = box.read('providerReqId') ?? [];
+  bool checkIds = box.read('checkIds') ??false;
+
+  if(checkIds==false){
+    box.remove('providerReqId');
+    box.write('checkIds', true);
+  }else{
+    print("empty ids");
+  }
+
 }
 
 

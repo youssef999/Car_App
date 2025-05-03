@@ -33,7 +33,9 @@ class MainUserPage extends StatelessWidget {
       body: Obx(() {
         switch (clientController.currentIndex.value) {
           case 0:
-            return NearestProvidersPage();
+            return NearestProvidersPage(isBack: false,
+
+            );
           case 1:
             return OffersPage();
           case 2:
@@ -41,7 +43,9 @@ class MainUserPage extends StatelessWidget {
           case 3:
             return SettingsPage();
           default:
-            return NearestProvidersPage();
+            return NearestProvidersPage(
+              isBack: false,
+            );
         }
       }),
       bottomNavigationBar: Obx(() {

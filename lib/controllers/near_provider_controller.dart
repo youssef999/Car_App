@@ -59,13 +59,31 @@ class NearProviderController extends GetxController {
   }
 
   bool check = false;
+  Timer? _timer;
 
   @override
   void onInit() {
     getCurrentLocation();
     getProvidersIdFromOffers();
+    //_startRepeatingCheck();
     // TODO: implement onInit
     super.onInit();
+  }
+
+  void _checkStatus() {
+    getCurrentLocation();
+    getProvidersIdFromOffers();
+  }
+
+  void startRepeatingCheck() {
+    print("STARTEDREAPEATING CHECKK,,,,");
+    // Call immediately once
+    _checkStatus();
+    // Then repeat every 4 seconds
+    _timer = Timer.periodic(Duration(seconds: 4), (_) {
+      print("CHECK......SS");
+      _checkStatus();
+    });
   }
 
   @override
@@ -100,8 +118,6 @@ class NearProviderController extends GetxController {
   //   }
   // }
 
-
-
   List<String> providerIds = [];
 
   Future<void> getProvidersIdFromOffers() async {
@@ -111,12 +127,10 @@ class NearProviderController extends GetxController {
           .where('status', isEqualTo: 'Pending')
           .where('userId', isEqualTo: "1")
           .get();
-
       providerIds = querySnapshot.docs
           .map((doc) => doc['providerId'].toString())
           .toSet()
           .toList(); // .toSet() to remove duplicates
-
       print("Accepted providerIds: $providerIds");
       update();
     } catch (e) {
@@ -124,24 +138,24 @@ class NearProviderController extends GetxController {
     }
   }
 
-
   String requestId = '';
 
   Future<void> cancelRequestToProvider(String providerId) async {
     final firestore = FirebaseFirestore.instance;
-
     try {
       // Step 1: Find the request
       final querySnapshot = await firestore
           .collection('requests')
           .where('providerId', isEqualTo: providerId)
-          .where('userId', isEqualTo: '1') // Replace with actual userId if dynamic
-          .where('status', isEqualTo: 'pending')
+          .where('userId', isEqualTo: '1')
+          .where('statuses', arrayContainsAny: ['pending', 'requestStart'])
           .get();
 
       if (querySnapshot.docs.isEmpty) {
-
-        Get.snackbar('Error'.tr, 'No pending request found'.tr);
+        box.remove('providerReqId');
+        print("EEmpty");
+        getProvidersIdFromOffers();
+       // Get.snackbar('Error'.tr, 'No pending request found'.tr);
         return;
       }
 
@@ -488,7 +502,9 @@ class NearProviderController extends GetxController {
     appMessage(text: 'Thank you for your feedback!'.tr, context: Get.context!);
 
 
-    Get.offAll(DoneView(price:price));
+    Get.offAll(DoneView(price:price,
+    providerId: providerId,
+    ));
   }
 
   Future<void> markOfferAsDone(String offerId) async {
@@ -572,9 +588,7 @@ class NearProviderController extends GetxController {
   void makeStopWatch(String requestId) {
 
     checkIfRequestIsStarted(requestId);
-
     countdownTimer?.cancel(); // Cancel any previous timer if running
-
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (estimatedTime > 0 && distance > 0) {
         estimatedTime--;
@@ -709,6 +723,8 @@ class NearProviderController extends GetxController {
   bool isCheckStart = false;
 
   Future<void> checkIfRequestIsStarted(String requestId) async {
+
+    print("CHECK REQUEST IS STARTED");
     try {
       final docSnapshot = await FirebaseFirestore.instance
           .collection('requests')
@@ -729,6 +745,7 @@ class NearProviderController extends GetxController {
       print('Error checking if request is started: $e');
       isCheckStart = false;
     }
+    print("CHECK REQUEST IS STARTED $isCheckStart");
     update();
   }
 

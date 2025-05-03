@@ -8,6 +8,7 @@ import 'package:first_project/values/colors.dart';
 import 'package:first_project/views/user%20views/offers_page.dart';
 import 'package:first_project/views/user%20views/provider_detailed_bottomSheet.dart';
 import 'package:first_project/views/user%20views/provider_detailed_page.dart';
+import 'package:first_project/views/user%20views/requests_view.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class NearestProvidersPage extends StatefulWidget {
+
+  bool isBack;
+  NearestProvidersPage({Key? key, required this.isBack}) : super(key: key);
+
+
   @override
   State<NearestProvidersPage> createState() => _NearestProvidersPageState();
 }
@@ -26,9 +32,14 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
   bool isLoading = false;
   String? errorMessage;
   final box=GetStorage();
+
   @override
   void initState() {
-   checkProviderLocal();
+
+    controller. startRepeatingCheck();
+   // controller.getCurrentLocation();
+   //  controller.getProvidersIdFromOffers();
+  // checkProviderLocal();
     super.initState();
     initLocationAndProviders();
    // controller.getCurrentLocation();
@@ -113,7 +124,9 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
       builder: (_) {
         return Scaffold(
           backgroundColor: backColor,
-          appBar: CustomAppBar(title: 'Nearest Car Transporters'.tr),
+          appBar: CustomAppBar(title: 'Nearest Car Transporters'.tr,
+          back:widget.isBack,
+          ),
           body: isLoading
               ? const Center(child: CircularProgressIndicator())
               : errorMessage != null
@@ -164,9 +177,11 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
             ),
           ),
         ),
-        controller.check == false ? buildProvidersList() : buildEstimatedTimeAndKm(
+        controller.check == false ? buildProvidersList()
+            : buildEstimatedTimeAndKm(
           controller.selectedProvider!,''
         ),
+
         const SizedBox(height: 20),
       ],
     );
@@ -314,13 +329,23 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
 
                       }),
                       const  SizedBox(height: 8,),
-                      CustomButton(
-                          width: 200,
-                          color:Colors.red,
-                          text: 'Cancel'.tr, onPressed: (){
-                        controller.cancelRequestToProvider(provider.id);
 
+                      CustomButton(
+                          width: 260,
+                          color:Colors.orange,
+                          text: 'View Order Details'.tr, onPressed: (){
+
+                        Get.to(RequestsView());
+
+                        // controller.cancelRequestToProvider(provider.id);
                       }),
+                      // CustomButton(
+                      //     width: 200,
+                      //     color:Colors.red,
+                      //     text: 'Cancelxx'.tr, onPressed: (){
+                      //   controller.cancelRequestToProvider(provider.id);
+                      //
+                      // }),
                     ],
                   )
                 else if (isRequestSent)
@@ -354,9 +379,12 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
                       const  SizedBox(height: 8,),
                       CustomButton(
                         width: 200,
-                          color:Colors.red,
-                          text: 'Cancel'.tr, onPressed: (){
-                        controller.cancelRequestToProvider(provider.id);
+                          color:Colors.orange,
+                          text: 'View Order Details'.tr, onPressed: (){
+
+                          Get.to(RequestsView());
+
+                       // controller.cancelRequestToProvider(provider.id);
                       }),
                     ],
                   ),
@@ -421,7 +449,7 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
                   const Icon(Icons.star, color: Colors.amber, size: 20),
                   const SizedBox(width: 4),
                   Text(
-                    provider.rate?.toStringAsFixed(1) ?? '0.0',
+                    provider.rate.toStringAsFixed(1) ?? '0.0',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -438,6 +466,7 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
           (controller.estimatedTime > 0 && controller.isCheckStart==false)
               ? buildOnWayContent(provider,price)
               : buildWaitingContent(provider,price),
+
         ],
       ),
     );
@@ -596,6 +625,7 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
           ],
         ),
         const SizedBox(height: 10),
+        ( isSuccessButton==true)?
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -607,22 +637,51 @@ class _NearestProvidersPageState extends State<NearestProvidersPage> {
               ),
             ),
             child: Text(
-              isSuccessButton ? 'Task Success'.tr : 'Cancel'.tr,
+              'Task Success'.tr ,
               style: const TextStyle(fontSize: 18, color: Colors.white),
             ),
             onPressed: () {
-             if (isSuccessButton==true) {
-               controller.getOfferId(controller.requestId,provider.id);
-           //    controller.rateProvider(provider.id, re, offerId);
-             }
-             else{
-               controller.cancelRequestToProvider(provider.id);
-             }
+              if (isSuccessButton==true) {
+                controller.getOfferId(controller.requestId,provider.id);
+                //    controller.rateProvider(provider.id, re, offerId);
+              }
+              // else{
+              //   print("gggg");
+              //   controller.cancelRequestToProvider(provider.id);
+              // }
               //rateProvider
               // Handle cancel or success
             },
           ),
-        ),
+        ):SizedBox(),
+        // SizedBox(
+        //   width: double.infinity,
+        //   child: ElevatedButton(
+        //     style: ElevatedButton.styleFrom(
+        //       backgroundColor: isSuccessButton ? Colors.green : Colors.red,
+        //       padding: const EdgeInsets.symmetric(vertical: 14),
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(12),
+        //       ),
+        //     ),
+        //     child: Text(
+        //       isSuccessButton ? 'Task Success'.tr : 'Cancel'.tr,
+        //       style: const TextStyle(fontSize: 18, color: Colors.white),
+        //     ),
+        //     onPressed: () {
+        //      if (isSuccessButton==true) {
+        //        controller.getOfferId(controller.requestId,provider.id);
+        //    //    controller.rateProvider(provider.id, re, offerId);
+        //      }
+        //      // else{
+        //      //   print("gggg");
+        //      //   controller.cancelRequestToProvider(provider.id);
+        //      // }
+        //       //rateProvider
+        //       // Handle cancel or success
+        //     },
+        //   ),
+        // ),
       ],
     );
   }

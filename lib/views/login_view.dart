@@ -12,14 +12,14 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('login'.tr, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('login'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.only(right: 12),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                icon: Icon(Icons.language, color: Colors.white),
+                icon: const Icon(Icons.language, color: Colors.white),
                 dropdownColor: primary,
                 value: _controller.selectedLanguage.value,
                 onChanged: (String? newValue) {
@@ -31,7 +31,7 @@ class LoginPage extends StatelessWidget {
                     value: value,
                     child: Text(
                       value.tr.toUpperCase(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 )
@@ -107,7 +107,7 @@ class LoginPage extends StatelessWidget {
                           width: 2,
                         ),
                       ),
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
                           Icon(
@@ -117,7 +117,7 @@ class LoginPage extends StatelessWidget {
                                 : Colors.grey,
                             size: 28,
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Text(
                             'User'.tr,
                             style: TextStyle(
@@ -128,7 +128,7 @@ class LoginPage extends StatelessWidget {
                                   : Colors.grey[800],
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           Radio<String>(
                             value: 'User',
                             groupValue: _controller.userType.value,
@@ -141,7 +141,7 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
                   // Provider Option
                   InkWell(
@@ -160,7 +160,7 @@ class LoginPage extends StatelessWidget {
                           width: 2,
                         ),
                       ),
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
                           Icon(
@@ -170,7 +170,7 @@ class LoginPage extends StatelessWidget {
                                 : Colors.grey,
                             size: 28,
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Text(
                             'Provider'.tr,
                             style: TextStyle(
@@ -181,7 +181,7 @@ class LoginPage extends StatelessWidget {
                                   : Colors.grey[800],
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           Radio<String>(
                             value: 'Provider',
                             groupValue: _controller.userType.value,
@@ -236,9 +236,9 @@ class LoginPage extends StatelessWidget {
                     fillColor: Colors.white,
                     prefixIcon: Container(
                       width: 70,
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       alignment: Alignment.centerLeft,
-                      child: Text(
+                      child: const Text(
                         '+20',
                         style: TextStyle(
                           fontSize: 16,
@@ -246,11 +246,12 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    hintText: 'enter_phone_number_hint'.tr,
-                    hintStyle: TextStyle(color: Colors.grey[500]),
+                    hintText:
+                    'enter_phone_number_hint'.tr,
+                    hintStyle: TextStyle(color: Colors.grey[300]),
                   ),
                   keyboardType: TextInputType.phone,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
 
@@ -299,7 +300,7 @@ class LoginPage extends StatelessWidget {
                             color: Colors.grey[500]),
                       ),
                       keyboardType: TextInputType.number,
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ],
@@ -328,7 +329,7 @@ class LoginPage extends StatelessWidget {
                   },
                   child: Text(
                     'sendOTP'.tr,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

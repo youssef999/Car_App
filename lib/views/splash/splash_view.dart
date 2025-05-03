@@ -61,19 +61,19 @@ class _SplashViewState extends State<SplashView> {
             // ),
             const SizedBox(height: 30),
             // App name with animation
-            AnimatedOpacity(
-              opacity: 1.0,
-              duration: const Duration(seconds: 1),
-              child: Text(
-                'Car Fix'.tr,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
+            // AnimatedOpacity(
+            //   opacity: 1.0,
+            //   duration: const Duration(seconds: 1),
+            //   child: Text(
+            //     'Car Fix'.tr,
+            //     style: TextStyle(
+            //       fontSize: 28,
+            //       fontWeight: FontWeight.bold,
+            //       color: Colors.white,
+            //       letterSpacing: 1.2,
+            //     ),
+            //   ),
+            // ),
 
           ],
         ),

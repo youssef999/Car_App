@@ -1,14 +1,17 @@
 import 'package:first_project/values/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
 
 import '../user views/main_user_page.dart'; // Add lottie dependency in pubspec.yaml
 
 class DoneView extends StatelessWidget {
+
+  final String providerId;
   final String price;
 
-  const DoneView({super.key, required this.price});
+  const DoneView({super.key, required this.price,required this.providerId});
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +90,18 @@ class DoneView extends StatelessWidget {
                 // ✅ Return Home Button
                 ElevatedButton(
                   onPressed: () {
+
+                     final box=GetStorage();
+
+                    // await box.write('providerReqId', providerIds);
+                    // print("ProviderReqId=========="+providerIds.toString());
+
+                    List providerIds = box.read('providerReqId') ?? [];
+
+                    providerIds.remove(providerId);
+
+                    box.write('providerReqId', providerIds);
+
                     Get.offAll(() => MainUserPage());
                    // Navigator.of(context).popUntil((route) => route.isFirst);
                   },

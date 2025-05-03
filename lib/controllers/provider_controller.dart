@@ -111,29 +111,29 @@ Future<void> updateOfferStatus(String status, String id,String requestId) async 
      // 'updatedAt': FieldValue.serverTimestamp(), // Optional: add timestamp
     });
 
+
     print('Offer $id updated successfully with status: $status');
     if(status == 'Started'){
 
 
    appMessage(text:'Start Task'.tr, context: Get.context!);
+
+
     }
+
+
     else if(status == 'Accepted'){
-
-
 
 appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
 
 
+    }
 
-    }else{
+    else{
 
 
 
       appMessage(text:'negotied offer has been refused'.tr, context: Get.context!);
-
-
-
-
 
     }
     fetchOrders();
@@ -147,6 +147,8 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
     updateRequestByRequestId(
         requestId: requestId
     );
+
+
   } catch (e) {
     print('Error updating offer status: $e');
     rethrow; // Re-throw the error if you want calling code to handle it
@@ -222,7 +224,9 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
       // Update each matching document
       for (final doc in querySnapshot.docs) {
         batch.update(doc.reference, {
-          'status': 'done'
+          'status': 'accepted'
+          //'requestStarted',
+          //'done'
         });
       }
       // Commit the batch update
