@@ -1,12 +1,13 @@
 import 'package:first_project/controllers/client_controller.dart';
-import 'package:first_project/views/user%20views/nearest_providers.dart';
-import 'package:first_project/views/user%20views/requests_view.dart';
-import 'package:first_project/views/user%20views/settings.dart';
+import 'package:first_project/views/user_views/nearest_providers.dart';
+import 'package:first_project/views/user_views/requests_view.dart';
+import 'package:first_project/views/user_views/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 import 'offers_page.dart';
+
 
 class MainUserPage extends StatelessWidget {
   final int index;
@@ -33,9 +34,12 @@ class MainUserPage extends StatelessWidget {
       body: Obx(() {
         switch (clientController.currentIndex.value) {
           case 0:
-            return NearestProvidersPage(isBack: false,
-
+             return const NearestProvidersPage(
+              isBack: false,
             );
+            // NearestProvidersPage(
+            //   isBack: false,
+            // );
           case 1:
             return OffersPage();
           case 2:
@@ -43,7 +47,7 @@ class MainUserPage extends StatelessWidget {
           case 3:
             return SettingsPage();
           default:
-            return NearestProvidersPage(
+            return const NearestProvidersPage(
               isBack: false,
             );
         }
@@ -52,7 +56,6 @@ class MainUserPage extends StatelessWidget {
         return CurvedNavigationBar(
           backgroundColor: Colors.transparent,
           color: primaryColor,
-
           buttonBackgroundColor: primaryColor,
           height: 55,
           animationDuration: const Duration(milliseconds: 200),

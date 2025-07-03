@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../helper/appMessage.dart';
 import '../main.dart';
-import '../views/user views/main_user_page.dart';
+import '../views/user_views/main_user_page.dart';
 
 class ProviderDetailsController extends GetxController{
 

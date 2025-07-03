@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:first_project/helper/send_notification.dart';
 import 'package:first_project/main.dart';
-import 'package:first_project/views/user%20views/main_user_page.dart';
+import 'package:first_project/views/user_views/main_user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get_storage/get_storage.dart';

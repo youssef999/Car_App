@@ -75,7 +75,7 @@ class LoginPage extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
+            const SizedBox(height: 32),
 
               // Account Type Selection
               Text(
@@ -210,102 +210,105 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  controller: _controller.phoneController,
-                  decoration: InputDecoration(
-                    contentPadding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    prefixIcon: Container(
-                      width: 70,
-                      padding: const EdgeInsets.only(left: 16),
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        '+20',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+              Directionality(
+                textDirection: TextDirection.ltr,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _controller.phoneController,
+                    decoration: InputDecoration(
+                      contentPadding:
+                      const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      prefixIcon: Container(
+                        width: 70,
+                        padding: const EdgeInsets.only(left: 16),
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          '+20',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
+                      hintText:
+                      'enter_phone_number_hint'.tr,
+                      hintStyle: TextStyle(color: Colors.grey[300]),
                     ),
-                    hintText:
-                    'enter_phone_number_hint'.tr,
-                    hintStyle: TextStyle(color: Colors.grey[300]),
+                    keyboardType: TextInputType.phone,
+                    style: const TextStyle(fontSize: 16),
                   ),
-                  keyboardType: TextInputType.phone,
-                  style: const TextStyle(fontSize: 16),
                 ),
               ),
 
-              // OTP Input (when needed)
-              Obx(() => _controller.isCodeSent.value
-                  ? Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 20),
-                  Text(
-                    'enter_otp_code'.tr,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: _controller.otpController,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 18, horizontal: 16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: 'enter_otp_hint'.tr,
-                        hintStyle: TextStyle(color: Colors.grey[500]),
-                        prefixIcon: Icon(Icons.lock_outline,
-                            color: Colors.grey[500]),
-                      ),
-                      keyboardType: TextInputType.number,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
-              )
-                  : const SizedBox()),
+              // // OTP Input (when needed)
+              // Obx(() => _controller.isCodeSent.value
+              //     ? Column(
+              //   crossAxisAlignment: CrossAxisAlignment.stretch,
+              //   children: [
+              //     const SizedBox(height: 20),
+              //     Text(
+              //       'enter_otp_code'.tr,
+              //       style: TextStyle(
+              //         fontSize: 18,
+              //         fontWeight: FontWeight.w600,
+              //         color: Colors.grey[800],
+              //       ),
+              //     ),
+              //     const SizedBox(height: 12),
+              //     Container(
+              //       decoration: BoxDecoration(
+              //         color: Colors.white,
+              //         borderRadius: BorderRadius.circular(12),
+              //         boxShadow: [
+              //           BoxShadow(
+              //             color: Colors.black.withOpacity(0.05),
+              //             blurRadius: 8,
+              //             spreadRadius: 1,
+              //             offset: const Offset(0, 4),
+              //           ),
+              //         ],
+              //       ),
+              //       child: TextField(
+              //         controller: _controller.otpController,
+              //         decoration: InputDecoration(
+              //           contentPadding: const EdgeInsets.symmetric(
+              //               vertical: 18, horizontal: 16),
+              //           border: OutlineInputBorder(
+              //             borderRadius: BorderRadius.circular(12),
+              //             borderSide: BorderSide.none,
+              //           ),
+              //           filled: true,
+              //           fillColor: Colors.white,
+              //           hintText: 'enter_otp_hint'.tr,
+              //           hintStyle: TextStyle(color: Colors.grey[500]),
+              //           prefixIcon: Icon(Icons.lock_outline,
+              //               color: Colors.grey[500]),
+              //         ),
+              //         keyboardType: TextInputType.number,
+              //         style: const TextStyle(fontSize: 16),
+              //       ),
+              //     ),
+              //   ],
+              // )
+                 // : const SizedBox()),
 
               const SizedBox(height: 36),
 
@@ -327,6 +330,12 @@ class LoginPage extends StatelessWidget {
                     print("type==${_controller.userType.value}");
                     Get.toNamed('/OtpView');
                   },
+                  // onPressed: () {
+                  //   final box = GetStorage();
+                  //   box.write('userType', _controller.userType.value);
+                  //   _controller.sendOTP(); // ← إرسال الكود هنا
+                  // },
+
                   child: Text(
                     'sendOTP'.tr,
                     style: const TextStyle(
@@ -351,10 +360,9 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
               ),
-            ],
-          ),
+            
+         ] ),
         ),
-      ),
-    );
-  }
+    ));
+}
 }

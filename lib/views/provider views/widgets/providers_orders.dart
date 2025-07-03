@@ -85,7 +85,7 @@ class _ProviderOrdersState extends State<ProviderOrders> {
           onSelected: (selected) {
             if (selected) controller.updateFilter(value);
           //  print("ppp=="+selected.toString());x
-            print("ppp=="+controller.selectedFilter.toString());
+            print("ppp==${controller.selectedFilter}");
           },
           selectedColor: primary,
           backgroundColor: Colors.grey.shade200,
@@ -179,11 +179,7 @@ class _ProviderOrdersState extends State<ProviderOrders> {
                           value: 'Rejected',
                           controller: _controller,
                         ),
-                        // _buildRadioOption(
-                        //   label: 'accepted'.tr,
-                        //   value: 'Started',
-                        //   controller: _controller,
-                        // ),
+                       
 
                       ],
                     ),
@@ -291,13 +287,7 @@ Widget _noOrdersWidget() {
           ),
         ),
         const SizedBox(height: 8),
-        // Text(
-        //   'try_changing_filters'.tr,
-        //   style: TextStyle(
-        //     fontSize: 14, 
-        //     color: Colors.grey.shade500,
-        //   ),
-        // ),
+      
       ],
     ),
   );
@@ -403,12 +393,7 @@ class OrderCard extends StatelessWidget {
                   if (order.placeOfLoading3 != null && order.placeOfLoading3!.isNotEmpty)
                     _buildLocationItem(order.placeOfLoading3!),
                 ],),
-                // _buildDetailRow(
-                //   icon: Icons.location_on,
-                //   color: Colors.red.shade400,
-                //   title: 'destination'.tr,
-                //   value: order.destination.tr,
-                // ),
+              
                 _buildDetailRow(
                   icon: Icons.directions_car,
                   color: Colors.blue.shade400,
@@ -448,7 +433,7 @@ class OrderCard extends StatelessWidget {
                           ),
                           onPressed: () {
                             _controller.updateOfferStatus('Rejected', order.id,
-                            order.requestId);
+                            order.requestId,'Rejected');
                           },
                           child: Text(
                             'reject_offer'.tr,
@@ -473,7 +458,7 @@ class OrderCard extends StatelessWidget {
                           ),
                           onPressed: () {
                             _controller.updateOfferStatus('Started', order.id,
-                            order.requestId
+                            order.requestId,'Started'
                             );
                           },
                           child: Text(
@@ -485,6 +470,10 @@ class OrderCard extends StatelessWidget {
                           ),
                         ),
                       ),
+
+
+                             const SizedBox(width: 12),
+                     
                     ],
                   )
                 else if (order.status == 'Pending' || order.status == 'Accepted')
@@ -496,7 +485,7 @@ class OrderCard extends StatelessWidget {
                   onPressed: (){
 
                     _controller.updateOfferStatus('Started', order.id,
-                      order.requestId
+                      order.requestId,'Started'
                     
                     );
 
@@ -504,44 +493,66 @@ class OrderCard extends StatelessWidget {
                 style:const TextStyle(color:Colors.white,fontWeight: FontWeight.bold,
                 fontSize: 18
                 ),
-                ))
+                )),
+
+
+             //    Expanded(
+                   //     child:
+                         Row(
+                           mainAxisAlignment: MainAxisAlignment.center,
+                           children: [
+                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red.shade600,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                elevation: 2,
+                                shadowColor: Colors.red.withOpacity(0.3),
+                              ),
+                              onPressed: () {
+                                _controller.updateOfferStatus('Rejected'.tr, order.id,
+                                order.requestId,'rejected'
+                                );
+                              },
+                              child: Text(
+                                'Cancel'.tr,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                                                //     ),
+                                                   ),
+                           const  SizedBox(width: 15,),
+                             ElevatedButton(
+                               style: ElevatedButton.styleFrom(
+                                 backgroundColor: Colors.green.shade600,
+                                 padding: const EdgeInsets.symmetric(vertical: 12),
+                                 shape: RoundedRectangleBorder(
+                                   borderRadius: BorderRadius.circular(8),
+                                 ),
+                                 elevation: 2,
+                                 shadowColor: Colors.red.withOpacity(0.3),
+                               ),
+                               onPressed: () {
+                                 _controller.updateOfferStatus('Done', order.id,
+                                     order.requestId,'Done'
+                                 );
+                               },
+                               child: Text(
+                                 'Done'.tr,
+                                 style: const TextStyle(
+                                   color: Colors.white,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                               //     ),
+                             ),
+                           ],
+                         ),
                 
-                  // Row(
-                  //   children: [
-                  //     Expanded(
-                  //       child: ElevatedButton.icon(
-                  //         icon: const Icon(Icons.call, size: 20, color: Colors.white),
-                  //         label: Text("call_now".tr),
-                  //         style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Colors.green.shade600,
-                  //           padding: const EdgeInsets.symmetric(vertical: 12),
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(8),
-                  //           ),
-                  //           elevation: 2,
-                  //           shadowColor: Colors.green.withOpacity(0.3),
-                  //         ),
-                  //         onPressed: () {},
-                  //       ),
-                  //     ),
-                  //     const SizedBox(width: 12),
-                  //     Expanded(
-                  //       child: OutlinedButton.icon(
-                  //         icon: Icon(Icons.call_made, size: 20, color: Colors.green.shade600),
-                  //         label: Text("call_me".tr,
-                  //           style: TextStyle(color: Colors.green.shade600)),
-                  //         style: OutlinedButton.styleFrom(
-                  //           padding: const EdgeInsets.symmetric(vertical: 12),
-                  //           side: BorderSide(color: Colors.green.shade600),
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(8),
-                  //           ),
-                  //         ),
-                  //         onPressed: () {},
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
               ],
             ),
           ),
@@ -678,8 +689,8 @@ class PendingCardrequest extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Text(
-                      "userName".tr+" : "+order.userName,
-                      style: TextStyle(
+                      "${"userName".tr} : ${order.userName}",
+                      style: const TextStyle(
                         fontSize: 13,
                         color: Colors.black,
                         fontWeight: FontWeight.w700,
@@ -753,83 +764,7 @@ class PendingCardrequest extends StatelessWidget {
                     _buildLocationItem(order.placeOfLoading3!),
                 ],),
 
-                //
-                // Container(
-                //   decoration:BoxDecoration(
-                //     borderRadius:BorderRadius.circular(12),
-                //     color: Colors.grey[100],
-                //   ),
-                //   child: Column(
-                //     children: [
-                //       Row(
-                //         children: [
-                //           Text( 'destination'.tr,
-                //           style:TextStyle(color:Colors.black,fontSize: 20,fontWeight: FontWeight.w600),
-                //           ),
-                //         ],
-                //       ),
-                //       SizedBox(height: 12,),
-                //       _buildDetailRow(
-                //         icon: Icons.location_on,
-                //         color: Colors.red.shade400,
-                //         title: order.destination.tr,
-                //         value: ''
-                //       ),  SizedBox(height: 5,),
-                //                _buildDetailRow(
-                //             icon: Icons.location_on,
-                //             color: Colors.red.shade400,
-                //             title: order.destination2.tr,
-                //             value: '',
-                //             ),
-                //       SizedBox(height: 5,),
-                //       _buildDetailRow(
-                //             icon: Icons.location_on,
-                //             color: Colors.red.shade400,
-                //             title: order.destination3.tr,
-                //             value: ''
-                //           ),
-                //     ],
-                //   ),
-                // ),
-                //
-                //
-                // Container(
-                //   decoration:BoxDecoration(
-                //     borderRadius:BorderRadius.circular(12),
-                //     color: Colors.grey[100],
-                //   ),
-                //   child: Column(
-                //     children: [
-                //       Row(
-                //         children: [
-                //           Text( 'destination'.tr,
-                //             style:TextStyle(color:Colors.black,fontSize: 20,fontWeight: FontWeight.w600),
-                //           ),
-                //         ],
-                //       ),
-                //       SizedBox(height: 12,),
-                //       _buildDetailRow(
-                //           icon: Icons.location_on,
-                //           color: Colors.red.shade400,
-                //           title: order.destination.tr,
-                //           value: ''
-                //       ),  SizedBox(height: 5,),
-                //       _buildDetailRow(
-                //         icon: Icons.location_on,
-                //         color: Colors.red.shade400,
-                //         title: order.destination2.tr,
-                //         value: '',
-                //       ),
-                //       SizedBox(height: 5,),
-                //       _buildDetailRow(
-                //           icon: Icons.location_on,
-                //           color: Colors.red.shade400,
-                //           title: order.destination3.tr,
-                //           value: ''
-                //       ),
-                //     ],
-                //   ),
-                // ),
+                
 
 
               const SizedBox(height: 7,),
@@ -870,23 +805,7 @@ class PendingCardrequest extends StatelessWidget {
                     //
                   }),
                 ):
-                //cancel
-     //            Center(
-     //              child: CustomButton(
-     //                  width: 222,
-     //                  color:Colors.red,
-     //                  text: 'Cancel'.tr, onPressed: (){
-     //
-     //                controller.deleteMyRequestAndOffer(
-     //                  order.id
-     //                );
-     //
-     //                controller.updateFilter('Pending');
-     //
-     //
-     // //
-     //              }),
-     //            ),
+     
 
                 const SizedBox(height: 16),
 
@@ -930,6 +849,7 @@ class PendingCardrequest extends StatelessWidget {
                       ),
                     ],
                   ),
+              
               ],
             ),
           ),
@@ -1050,3 +970,4 @@ class PendingCardrequest extends StatelessWidget {
     }
   }
 }
+

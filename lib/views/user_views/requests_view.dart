@@ -1,6 +1,6 @@
 import 'package:first_project/controllers/requests_controller.dart';
 import 'package:first_project/values/colors.dart';
-import 'package:first_project/views/user%20views/offers_page.dart';
+import 'package:first_project/views/user_views/offers_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -280,26 +280,34 @@ class _RequestsViewState extends State<RequestsView> {
                                 ):SizedBox(),
 
 
-                                (request.status!='done'&&request.status!='Done')?
-                                Center(
-                                  child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        elevation: 4, // إضافة ظل للزر
-                                      ),
-                                      onPressed: (){
-
-
-                                        controller.cancelRequest(request.id,
-                                        request.providerId
-                                        );
-                                      }, child: Text(
-                                    "cancelRequest".tr,style:TextStyle(color:textColorLight),
-                                  )),
+                                (request.status!='done'&&request.status!='Done')? Text(dateFormat.format(request.time),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
                                 ):const SizedBox(),
+
+
+                                // Center(
+                                //   child: ElevatedButton(
+                                //       style: ElevatedButton.styleFrom(
+                                //         backgroundColor: Colors.red,
+                                //         shape: RoundedRectangleBorder(
+                                //           borderRadius: BorderRadius.circular(12),
+                                //         ),
+                                //         elevation: 4, // إضافة ظل للزر
+                                //       ),
+                                //       onPressed: (){
+
+
+                                //         controller.cancelRequest(request.id,
+                                //         request.providerId
+                                //         );
+                                //       }, child: Text(
+                                //     "cancelRequest".tr,style:TextStyle(color:textColorLight),
+                                //   )),
+                                // )
+                               // :const SizedBox(),
 
 
 

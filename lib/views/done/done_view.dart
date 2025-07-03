@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
 
-import '../user views/main_user_page.dart'; // Add lottie dependency in pubspec.yaml
+import '../user_views/main_user_page.dart'; // Add lottie dependency in pubspec.yaml
 
 class DoneView extends StatelessWidget {
 

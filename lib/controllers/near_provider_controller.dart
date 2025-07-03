@@ -21,42 +21,160 @@ class NearProviderController extends GetxController {
   final box=GetStorage();
 
 
-  Future<void> getServiceProviders() async {
-    try {
-      // Get user's current location
+  // Future<void> getServiceProviders() async {
+  //   try {
+  //     // Get user's current location
+  //     Position position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high,
+  //     );
+  //     double userLat = position.latitude;
+  //     double userLng = position.longitude;
+
+  //     // Fetch all providers
+  //     QuerySnapshot querySnapshot =
+  //     await _firestore.collection('providers').get();
+  //     print("Fetched providers: ${querySnapshot.docs.length}");
+
+  //     // Filter providers within 50 km
+  //     List<Provider> nearbyProviders = querySnapshot.docs.map((doc) {
+  //       var data = doc.data() as Map<String, dynamic>;
+  //       return Provider.fromMap(data);
+  //     }).where((provider) {
+  //       double distance = Geolocator.distanceBetween(
+  //        userLat,
+  //         userLng,
+  //         provider.location.latitude,
+  //         provider.location.longitude,
+  //       ) / 1000; // Convert meters to km
+
+  //       return distance <= 5000; // Only keep providers within 50 km
+  //     }).toList();
+
+  //     // Update the providers list
+  //     providers.assignAll(nearbyProviders);
+  //     print("PROVIDERR===$providers");
+  //     update();
+  //   } catch (e) {
+  //     print("Error fetching providers: $e");
+  //   }
+//   // }
+
+
+
+//   Future<void> getServiceProviders({bool useLocation = false}) async {
+//   try {
+//     double userLat = 0.0;
+//     double userLng = 0.0;
+
+//     if (useLocation) {
+//       // Get user's current location
+//       Position position = await Geolocator.getCurrentPosition(
+//         desiredAccuracy: LocationAccuracy.high,
+//       );
+//       userLat = position.latitude;
+//       userLng = position.longitude;
+//     }
+
+//     // Fetch all providers
+//     QuerySnapshot querySnapshot =
+//         await _firestore.collection('providers').get();
+//     print("Fetched providers: ${querySnapshot.docs.length}");
+
+//     // Convert all documents to Provider model
+//     List<Provider> allProviders = querySnapshot.docs.map((doc) {
+//       var data = doc.data() as Map<String, dynamic>;
+//       return Provider.fromMap(data);
+//     }).toList();
+
+//     List<Provider> filteredProviders = [];
+
+//     if (useLocation) {
+//       // Filter providers within 50 km only if location is enabled
+//       filteredProviders = allProviders.where((provider) {
+//         double distance = Geolocator.distanceBetween(
+//               userLat,
+//               userLng,
+//               provider.location.latitude,
+//               provider.location.longitude,
+//             ) /
+//             1000; // Convert meters to km
+
+//         return distance <= 50; // Filter within 50 km
+//       }).toList();
+//     } else {
+//       // No filtering – just return all providers
+//       filteredProviders = allProviders;
+//     }
+
+//     // Update observable list
+//     providers.assignAll(filteredProviders);
+//     print("PROVIDERS FOUND: ${providers.length}");
+//     update();
+//   } catch (e) {
+//     print("Error fetching providers: $e");
+//   }
+// }
+Future<void> getServiceProviders({
+  bool useLocation = false,
+  String? requestedCarType, // small, medium, large
+}) async {
+
+  print("GETTING PROVIDERS WITH REQUESTED CAR TYPE: $requestedCarType");
+  try {
+    double userLat = 0.0;
+    double userLng = 0.0;
+
+    if (useLocation) {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      double userLat = position.latitude;
-      double userLng = position.longitude;
-
-      // Fetch all providers
-      QuerySnapshot querySnapshot =
-      await _firestore.collection('providers').get();
-
-      // Filter providers within 50 km
-      List<Provider> nearbyProviders = querySnapshot.docs.map((doc) {
-        var data = doc.data() as Map<String, dynamic>;
-        return Provider.fromMap(data);
-      }).where((provider) {
-        double distance = Geolocator.distanceBetween(
-         userLat,
-          userLng,
-          provider.location.latitude,
-          provider.location.longitude,
-        ) / 1000; // Convert meters to km
-
-        return distance <= 5000; // Only keep providers within 50 km
-      }).toList();
-
-      // Update the providers list
-      providers.assignAll(nearbyProviders);
-      print("PROVIDERR===$providers");
-      update();
-    } catch (e) {
-      print("Error fetching providers: $e");
+      userLat = position.latitude;
+      userLng = position.longitude;
     }
+
+    Query query = _firestore.collection('providers');
+
+    // ✅ فلترة حسب نوع النقل إذا تم تحديده
+    if (requestedCarType != null && requestedCarType.isNotEmpty) {
+      query = query.where('carTransporterSizes', arrayContainsAny: [requestedCarType]);
+    }
+
+    QuerySnapshot querySnapshot = await query.get();
+    print("Fetched providers: ${querySnapshot.docs.length}");
+
+    List<Provider> allProviders = querySnapshot.docs.map((doc) {
+      var data = doc.data() as Map<String, dynamic>;
+      return Provider.fromMap(data);
+    }).toList();
+
+    // ✅ فلترة حسب الموقع لو مفعل
+    // List<Provider> filteredProviders = [];
+
+    // if (useLocation) {
+    //   filteredProviders = allProviders.where((provider) {
+    //     double distance = Geolocator.distanceBetween(
+    //           userLat,
+    //           userLng,
+    //           provider.location.latitude,
+    //           provider.location.longitude,
+    //         ) / 1000;
+    //     return distance <= 50;
+    //   }).toList();
+    // } else {
+    //   filteredProviders = allProviders;
+    // }
+
+    // providers.assignAll(filteredProviders);
+     providers.assignAll(allProviders);
+    print("Filtered providers: ${providers.length}");
+    update();
+  } catch (e) {
+    print("Error fetching providers: $e");
   }
+}
+
+
+
 
   bool check = false;
   Timer? _timer;
@@ -64,26 +182,54 @@ class NearProviderController extends GetxController {
   @override
   void onInit() {
     getCurrentLocation();
-    getProvidersIdFromOffers();
+    getCurrentTrips();
+   // getProvidersIdFromOffers();
     //_startRepeatingCheck();
     // TODO: implement onInit
     super.onInit();
   }
 
-  void _checkStatus() {
-    getCurrentLocation();
-    getProvidersIdFromOffers();
+  List<Map<String, dynamic>> currentTrips = [];
+ bool isCurrentTrip=false;
+  Future<List<Map<String, dynamic>>> getCurrentTrips() async {
+    print("GETTING CURRENT TRIPS");
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('requests')
+          .where('userId', isEqualTo: '1')
+          .where('status', isEqualTo: 'accepted')
+          .get();
+      List<Map<String, dynamic>> trips = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      currentTrips=trips;
+
+      print("currentTrips==${currentTrips.toString()}");
+      print("LENGTH==${trips.length}");
+      if(currentTrips.isNotEmpty){
+        isCurrentTrip=true;
+      }
+      update();
+      return trips;
+    } catch (e) {
+      print('Error getting current trips: $e');
+      return [];
+    }
   }
 
+
+  // void _checkStatus() {
+  //   getCurrentLocation();
+  //   getProvidersIdFromOffers();
+  // }
+
   void startRepeatingCheck() {
-    print("STARTEDREAPEATING CHECKK,,,,");
-    // Call immediately once
-    _checkStatus();
-    // Then repeat every 4 seconds
-    _timer = Timer.periodic(Duration(seconds: 4), (_) {
-      print("CHECK......SS");
-      _checkStatus();
-    });
+    // print("STARTEDREAPEATING CHECKK,,,,");
+    // // Call immediately once
+    // _checkStatus();
+    // // Then repeat every 4 seconds
+    // _timer = Timer.periodic(Duration(seconds: 4), (_) {
+    //   print("CHECK......SS");
+    //   _checkStatus();
+    // });
   }
 
   @override
@@ -120,23 +266,23 @@ class NearProviderController extends GetxController {
 
   List<String> providerIds = [];
 
-  Future<void> getProvidersIdFromOffers() async {
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('offers')
-          .where('status', isEqualTo: 'Pending')
-          .where('userId', isEqualTo: "1")
-          .get();
-      providerIds = querySnapshot.docs
-          .map((doc) => doc['providerId'].toString())
-          .toSet()
-          .toList(); // .toSet() to remove duplicates
-      print("Accepted providerIds: $providerIds");
-      update();
-    } catch (e) {
-      print("Error fetching offers: $e");
-    }
-  }
+  // Future<void> getProvidersIdFromOffers() async {
+  //   try {
+  //     final querySnapshot = await FirebaseFirestore.instance
+  //         .collection('offers')
+  //         .where('status', isEqualTo: 'Pending')
+  //         .where('userId', isEqualTo: "1")
+  //         .get();
+  //     providerIds = querySnapshot.docs
+  //         .map((doc) => doc['providerId'].toString())
+  //         .toSet()
+  //         .toList(); // .toSet() to remove duplicates
+  //     print("Accepted providerIds: $providerIds");
+  //     update();
+  //   } catch (e) {
+  //     print("Error fetching offers: $e");
+  //   }
+  // }
 
   String requestId = '';
 
@@ -154,7 +300,7 @@ class NearProviderController extends GetxController {
       if (querySnapshot.docs.isEmpty) {
         box.remove('providerReqId');
         print("EEmpty");
-        getProvidersIdFromOffers();
+        //getProvidersIdFromOffers();
        // Get.snackbar('Error'.tr, 'No pending request found'.tr);
         return;
       }
@@ -179,7 +325,7 @@ class NearProviderController extends GetxController {
 
 
       getCurrentLocation();
-      getProvidersIdFromOffers();
+      //getProvidersIdFromOffers();
 
       print('Request and offer successfully cancelled.');
     } catch (e) {
@@ -254,8 +400,8 @@ class NearProviderController extends GetxController {
     lat=position.latitude;
     lng=position.longitude;
     update();
-    checkForOrder(position.latitude,position.longitude);
-    checkForOrderIsStarted(position.latitude,position.longitude);
+    // checkForOrder(position.latitude,position.longitude);
+    // checkForOrderIsStarted(position.latitude,position.longitude);
     return position;
   }
 

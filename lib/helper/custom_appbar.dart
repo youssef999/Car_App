@@ -1,11 +1,15 @@
+import 'package:first_project/controllers/near_provider_controller.dart';
 import 'package:first_project/values/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool back;
 
   const CustomAppBar({
+    
     Key? key,
     required this.title,
     this.back = false, // default to false
@@ -59,7 +63,64 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 11), // balance with left icon
+            //  IconButton(onPressed: () {}, icon: const Icon(Icons.filter_list, color: Colors.white)),
+             // const SizedBox(width: 11), // balance with left icon
+             IconButton(
+  onPressed: () {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SizedBox(
+          height: 200,
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.local_shipping, color: Colors.black),
+                title: Text('large'.tr),
+                onTap: () {
+                  Navigator.pop(context); // Close sheet
+                  Get.find<NearProviderController>().getServiceProviders(
+                    useLocation: true,
+                    requestedCarType: 'large',
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.directions_car, color: Colors.black),
+                title: Text('medium'.tr),
+                onTap: () {
+                  Navigator.pop(context);
+                  Get.find<NearProviderController>().getServiceProviders(
+                    useLocation: true,
+                    requestedCarType: 'medium',
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.electric_car, color: Colors.black),
+                title: Text('small'.tr),
+                onTap: () {
+                  Navigator.pop(context);
+                  Get.find<NearProviderController>().getServiceProviders(
+                    useLocation: true,
+                    requestedCarType: 'small',
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  },
+  icon: const Icon(Icons.filter_list, color: Colors.white),
+)
+
+
             ],
           ),
         ),

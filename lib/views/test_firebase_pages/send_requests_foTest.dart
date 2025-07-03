@@ -2,15 +2,15 @@
 // import 'package:first_project/controllers/provider_controller.dart';
 // import 'package:first_project/models/client_request_model.dart';
 // import 'package:flutter/material.dart';
-//
+
 // import 'package:get/get.dart';
 // // Adjust the import path
 // // Adjust the import path
-//
+
 // class TestRequestsPage extends StatelessWidget {
 //   final ProviderController _controller = Get.put(ProviderController(
 //       providerId: '123456789')); // Get the existing ProviderController instance
-//
+
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -37,7 +37,7 @@
 //           ),
 //         ));
 //   }
-//
+
 //   // Method to send 20 dummy requests to Firestore
 //   Future<void> _sendDummyRequests() async {
 //     print(
@@ -63,13 +63,13 @@
 //             status: 'accomplished',
 //             hiddenByProvider: false),
 //       );
-//
+
 //       // Send each request to Firestore
 //       for (final request in dummyRequests) {
 //         print('==================Adding request: ${request.id}'); // Debug log
 //         await _controller.addRequest(request);
 //       }
-//
+
 //       Get.snackbar('Success', '20 dummy requests sent to Firestore');
 //     } catch (e, stackTrace) {
 //       print('==========================Error: $e'); // Debug log
@@ -77,9 +77,9 @@
 //       Get.snackbar('Error', 'Failed to send requests: $e');
 //     }
 //   }
-//
+
 //   ////////////////////////////////
 //   ///
-//
+
 //   ///
 // }

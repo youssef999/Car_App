@@ -6,12 +6,26 @@ class AppTranslations extends Translations {
         'en':
 
         {
+          "task ended successfully":"task ended successfully",
+
+   'Enter the 6-digit OTP sent to your phone': 'Enter the 6-digit OTP sent to your phone',
+
           "Settings":"Settings",
+          "task canceled successfully":"Task canceled successfully",
+          "select destination":"select destination",
+          "My Task": "My Tasks",
+          "Loading Location":"Loading Location...",
+          "Search Region, City, or District":"Search Region, City, or District",
 
           "Negotiated":"Negotiated",
           "Price updated to":"Price updated to",
+          "Car Size": "Car Size",
+          "large" : "large",
+          "medium" : "medium",
+          "small" : "small",
 
           "Started":"Started",
+          "Search Destination Location":"Search Destination Location",
 
           "Negotiated Offer":"Negotiated Offer",
 
@@ -261,6 +275,7 @@ By continuing to use the app, you agree to the practices described in this Priva
   "destinations": "Destinations",
   "vehicleSize": "Vehicle Size",
   "requestDate": "Request Date",
+  "cancel": "Cancel",
 
 
     "completed": "Completed",
@@ -287,11 +302,27 @@ By continuing to use the app, you agree to the practices described in this Priva
         },
         'ar': {
 
+          "task ended successfully":"تم انتهاء المهمة بنجاح",
+
           "View Order Details":"عرض تفاصيل الطلب",
+          "select destination":"اختر الموقع",
+          "My Task": "مهامي",
+          "Search Region, City, or District":"ابحث في المنطقة أو المدينة أو الحي",
 
           "Started":"تم بدء المهمة",
 
+          "task canceled successfully":"تم إلغاء المهمة بنجاح",
+
+
+          "Enter the 6-digit OTP sent to your phone":"أدخل كود التحقق المكون من 6 أرقام المرسل إلى هاتفك",
+          "Loading Location":"جارٍ تحميل الموقع...",
+
           "Settings":"الاعدادات",
+          "Search Destination Location":"ابحث عن موقع الوجهة",
+          "Car Size": "حجم السيارة",
+          "small": "صغير",
+          "medium": "متوسط",
+          "large  ": "كبير",
 
           "Negotiated Offer":"متابعة عرض التفاوض المرسل",
 
@@ -478,6 +509,7 @@ By continuing to use the app, you agree to the practices described in this Priva
           "meduim": "متوسط",
           "Large": "كبير",
           "large": "كبير",
+          "cancel"
           "large,": "كبير",
           "Provider Details": "تفاصيل المقدم",
           "Status": "الحالة",

@@ -1,6 +1,6 @@
 import 'package:first_project/models/provider_model.dart';
 import 'package:first_project/values/colors.dart';
-import 'package:first_project/views/user%20views/provider_detailed_page.dart';
+import 'package:first_project/views/user_views/provider_detailed_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

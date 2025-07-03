@@ -99,7 +99,7 @@ class ProviderController extends GetxController {
 
 
 
-Future<void> updateOfferStatus(String status, String id,String requestId) async {
+Future<void> updateOfferStatus(String status, String id,String requestId,String st) async {
     print("STATE======$status");
   try {
     // Get reference to the Firestore collection
@@ -114,10 +114,7 @@ Future<void> updateOfferStatus(String status, String id,String requestId) async 
 
     print('Offer $id updated successfully with status: $status');
     if(status == 'Started'){
-
-
    appMessage(text:'Start Task'.tr, context: Get.context!);
-
 
     }
 
@@ -129,29 +126,56 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
 
     }
 
+
+    else if(status == 'Done'||status == 'done'||status=='done'.tr){
+      appMessage(text:'task ended successfully'.tr, context: Get.context!);
+    }
+
     else{
 
 
 
       appMessage(text:'negotied offer has been refused'.tr, context: Get.context!);
 
+      deleteOrder(requestId);
+
+
+
+
     }
+    updateRequestByRequestId(
+        requestId: requestId,
+        st: st
+    );
     fetchOrders();
 
     updateOffersByRequestId(offerId: id, requestId: requestId,
     updateData: {
-      'status': 'Rejected'
+      'status': st
+      //status
+      //'Rejected'
     }
     );
 
-    updateRequestByRequestId(
-        requestId: requestId
-    );
 
 
   } catch (e) {
     print('Error updating offer status: $e');
     rethrow; // Re-throw the error if you want calling code to handle it
+  }
+}
+
+
+Future<void> deleteOrder(String requestId) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('requests') // اسم المجموعة
+        .doc(requestId)         // ID المستند الذي تريد حذفه
+        .delete();
+
+    print('Order deleted successfully');
+  } catch (e) {
+    print('Failed to delete order: $e');
   }
 }
 
@@ -210,6 +234,8 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
 
   Future<void> updateRequestByRequestId({
     required String requestId,
+    required String st,
+
   }) async {
     print("........updateRequestByRequestId.........");
     try {
@@ -224,7 +250,8 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
       // Update each matching document
       for (final doc in querySnapshot.docs) {
         batch.update(doc.reference, {
-          'status': 'accepted'
+          'status':st
+          //'accepted'
           //'requestStarted',
           //'done'
         });
@@ -337,12 +364,15 @@ appMessage(text:'negotied offer has been accepted'.tr, context: Get.context!);
 /////////////////////////////////////////////////////
 // Fetch accomplished orders
   Future<void> fetchAccomplishedOrders() async {
+
+    print("FETCH ORDDDDDD SSS..");
     _isLoading.value = true;
     try {
       final querySnapshot = await _firestore
           .collection('requests')
           .where('providerId', isEqualTo: providerId)
-          .where('status', isEqualTo: 'accomplished') // Filter by status
+          .where('status', isEqualTo: 'Done') // Filter by status
+          //.where('status', isEqualTo: 'accomplished') // Filter by status
           .get();
 
       _accomplishedOrders.assignAll(

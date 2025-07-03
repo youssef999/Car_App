@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-import '../views/user views/main_user_page.dart';
+import '../views/user_views/main_user_page.dart';
 
 class RequestsController extends GetxController{
 

@@ -9,6 +9,8 @@ import 'package:intl/intl.dart';
 import '../../models/provider_offer_model.dart';
 import 'main_user_page.dart';
 import 'nearest_providers.dart';
+// Make sure NearestProvidersPage is imported from the correct file
+// If 'nearest_providers.dart' does not export NearestProvidersPage, update the import accordingly.
 
 class OffersPage extends StatefulWidget {
   @override

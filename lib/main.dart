@@ -142,7 +142,7 @@ class MyApp extends StatelessWidget {
       //endRequestsPage(),
       getPages:[
         GetPage(name: '/HomeView', page: () => const HomeView()),
-        GetPage(name: '/OtpView', page: () => OtpView()),
+        GetPage(name: '/OtpView', page: () => OtpView(otp: '',)),
         GetPage(name: '/ProviderDashboard', page: () => ProviderDashboard())
       ],
     );
